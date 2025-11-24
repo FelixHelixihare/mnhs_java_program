@@ -1,3 +1,4 @@
+import java.security.NoSuchAlgorithmException;
 import java.sql.*;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
@@ -16,13 +17,21 @@ public class Main {
             while (rs.next()) {
                 System.out.println("USER EXISTS: " + rs.getBoolean("row_exists"));
             }
-
         } catch (SQLException e) {
             System.err.println(e.getMessage());
         }
 
-        System.out.print("\n\n");
-        UserManager.register(conn);
+        System.out.print("\n");
+
+        UserManager userManager = null;
+        try {
+            userManager = new UserManager();
+        } catch (NoSuchAlgorithmException e) {
+            System.out.println(e.getMessage());
+        }
+
+        assert userManager != null;
+        userManager.register(conn);
     }
 
     public static boolean connect() {
