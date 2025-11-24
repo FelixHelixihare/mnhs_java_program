@@ -4,6 +4,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
@@ -112,7 +113,7 @@ public class UserManager {
                 preparedStatement.setString(1, username);
                 ResultSet rs = preparedStatement.executeQuery();
                 rs.next();
-                if (!rs.getBoolean("row_exists")) {
+                if (rs.getBoolean("row_exists")) {
                     break;
                 } else {
                     System.out.print("No such user exists. Try again: ");
@@ -127,19 +128,28 @@ public class UserManager {
         String password = scanner.nextLine();
 
         try {
-            String sql = "SELECT (user_id) FROM user WHERE username=?;";
+            String sql = "SELECT user_id FROM user WHERE user_username=?;";
             PreparedStatement preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setString(1, username);
             ResultSet resultSet = preparedStatement.executeQuery();
             resultSet.next();
             String user_id = resultSet.getString("user_id");
 
-            sql = "SELECT (user_password, password_salt) FROM password WHERE user_id=?";
+            sql = "SELECT user_password, password_salt FROM password WHERE user_id=?";
             preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setString(1, user_id);
             resultSet = preparedStatement.executeQuery();
             resultSet.next();
 
+            byte[] dbPassword = resultSet.getBytes("user_password");
+            messageDigest.update(resultSet.getBytes("password_salt"));
+            byte[] hashedPassword = messageDigest.digest(password.getBytes(StandardCharsets.UTF_8));
+
+            if (Arrays.equals(dbPassword, hashedPassword)) {
+                System.out.println("Login success!");
+            } else {
+                System.out.println("Password stored does not match password entered.");
+            }
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
