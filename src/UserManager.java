@@ -52,7 +52,7 @@ public class UserManager {
                     System.out.print("That username is already in use. Please use another one: ");
                 }
             } catch (SQLException e) {
-                System.out.println(e.getMessage());
+                System.err.println(e.getMessage());
             }
         }
 
@@ -98,7 +98,7 @@ public class UserManager {
             preparedStatement.executeUpdate();
 
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
         }
     }
 
@@ -152,7 +152,7 @@ public class UserManager {
             }
 
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
         }
     }
 }
