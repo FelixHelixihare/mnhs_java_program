@@ -64,8 +64,8 @@ public class AddressManager {
         }
     }
 
-    public Map<String, Object> getRegion    (int index) {return regionList.get(index);}
-    public Map<String, Object> getProvince  (String region_code, int index)     {return provincesInRegions.get(region_code).get(index);}
-    public Map<String, Object> getCity      (String province_code, int index)   {return citiesInProvinces.get(province_code).get(index);}
-    public Map<String, Object> getBarangay  (String city_code, int index)       {return barangaysInCities.get(city_code).get(index);}
+    public Map<String, Object> getRegion (int index) throws IndexOutOfBoundsException {return regionList.get(index);}
+    public Map<String, Object> getProvince  (String region_code, int index) throws IndexOutOfBoundsException    {return provincesInRegions.get(region_code).get(index);}
+    public Map<String, Object> getCity      (String province_code, int index) throws IndexOutOfBoundsException  {return citiesInProvinces.get(province_code).get(index);}
+    public Map<String, Object> getBarangay  (String city_code, int index) throws IndexOutOfBoundsException      {return barangaysInCities.get(city_code).get(index);}
 }

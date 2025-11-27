@@ -3,16 +3,15 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Scanner;
 
 public class UserManager {
-    private List<User> users = new ArrayList<>();
     private final Scanner scanner = new Scanner(System.in);
     private final SecureRandom random = new SecureRandom();
     private final MessageDigest messageDigest = MessageDigest.getInstance("SHA-512");
+
+    private static User currentUser = null;
 
     public UserManager() throws NoSuchAlgorithmException {
     }
@@ -24,7 +23,7 @@ public class UserManager {
         String lastName = scanner.nextLine();
         System.out.print("Enter Middle Name: ");
         String middleName = scanner.nextLine();
-        System.out.print("Enter Name Extension (e.g. Jr., Sr. II, III, etc.): ");
+        System.out.print("Enter Name Extension (e.g. Jr., Sr. II, III, etc.; leave blank if not applicable).\n>");
         String extensionName = scanner.nextLine();
 
         System.out.print("Enter Birthdate (YYYY-MM-DD): ");
@@ -128,31 +127,48 @@ public class UserManager {
         String password = scanner.nextLine();
 
         try {
-            String sql = "SELECT user_id FROM user WHERE user_username=?;";
+            String sql = "SELECT user_id," +
+                    "user_first_name, " +
+                    "user_last_name, " +
+                    "user_middle_name, " +
+                    "user_extension_name, " +
+                    "user_birthdate, " +
+                    "user_dateCreated " +
+                    "FROM user WHERE user_username=?;";
             PreparedStatement preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setString(1, username);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            resultSet.next();
-            String user_id = resultSet.getString("user_id");
+            ResultSet userResultSet = preparedStatement.executeQuery();
+            userResultSet.next();
+            String user_id = userResultSet.getString("user_id");
 
             sql = "SELECT user_password, password_salt FROM password WHERE user_id=?";
             preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setString(1, user_id);
-            resultSet = preparedStatement.executeQuery();
-            resultSet.next();
+            ResultSet passwordResultSet = preparedStatement.executeQuery();
+            passwordResultSet.next();
 
-            byte[] dbPassword = resultSet.getBytes("user_password");
-            messageDigest.update(resultSet.getBytes("password_salt"));
+            byte[] dbPassword = passwordResultSet.getBytes("user_password");
+            messageDigest.update(passwordResultSet.getBytes("password_salt"));
             byte[] hashedPassword = messageDigest.digest(password.getBytes(StandardCharsets.UTF_8));
 
             if (Arrays.equals(dbPassword, hashedPassword)) {
-                System.out.println("Login success!");
+                currentUser = new User(
+                        userResultSet.getInt("user_id"),
+                        userResultSet.getString("user_first_name"),
+                        userResultSet.getString("user_last_name"),
+                        userResultSet.getString("user_middle_name"),
+                        userResultSet.getString("user_extension_name"),
+                        userResultSet.getDate("user_birthdate"),
+                        userResultSet.getTimestamp("user_dateCreated")
+                );
+                System.out.println("Login success! Welcome " + currentUser.get_fml_name() + "!");
             } else {
                 System.out.println("Password stored does not match password entered.");
             }
 
         } catch (SQLException e) {
-            System.err.println(e.getMessage());
+            //System.err.println(e.getMessage());
+            e.printStackTrace();
         }
     }
 }

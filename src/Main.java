@@ -12,7 +12,6 @@ public class Main {
     private static final Scanner scanner = new Scanner(System.in);
     private static final UserManager userManager;
     private static final AddressManager addressManager = new AddressManager();
-    private static User currentUser = null;
 
     static {
         try {
@@ -29,7 +28,7 @@ public class Main {
         loop: while (true) {
             int input = get_inputInt();
 
-            if (currentUser == null) {
+
                 switch (input) {
                     case 0:
                         System.out.println("Goodbye!");
@@ -49,7 +48,7 @@ public class Main {
                     default:
                         System.out.println("Please choose an integer from 0 to 2.");
                 }
-            }
+
         }
     }
 
