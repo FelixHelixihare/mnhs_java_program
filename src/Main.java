@@ -69,7 +69,7 @@ public class Main {
             int input = get_inputInt();
 
             try {
-                region = addressManager.get_region(input);
+                region = addressManager.getRegion(input);
             } catch (IndexOutOfBoundsException e) {
                 System.out.println("That integer does not correspond to any region. Please try again.");
                 continue;
@@ -78,13 +78,11 @@ public class Main {
         }
 
         addressManager.show_province_choices((String) region.get("region_code"));
-        List<Map<String, Object>> choices = addressManager.get_provinces_in_region((String) region.get("region_code"));
-
         while (true) {
             int input = get_inputInt();
 
             try {
-                province = choices.get(input);
+                province = addressManager.getProvince((String) region.get("region_code"), input);
             } catch (IndexOutOfBoundsException e) {
                 System.out.println("This integer does not correspond to any province. Please try again.");
                 continue;
@@ -93,12 +91,11 @@ public class Main {
         }
 
         addressManager.show_city_choices((String) province.get("province_code"));
-        choices = addressManager.get_cities_in_province((String) province.get("province_code"));
         while (true) {
             int input = get_inputInt();
 
             try {
-                city = choices.get(input);
+                city = addressManager.getCity((String) province.get("province_code"), input);
             } catch (IndexOutOfBoundsException e) {
                 System.out.println("This integer does not correspond to any city. Please try again.");
                 continue;
@@ -107,12 +104,11 @@ public class Main {
         }
 
         addressManager.show_barangay_choices((String) city.get("city_code"));
-        choices = addressManager.get_barangays_in_city((String) city.get("city_code"));
         while (true) {
             int input = get_inputInt();
 
             try {
-                barangay = choices.get(input);
+                barangay = addressManager.getBarangay((String) city.get("city_code"), input);
             } catch (IndexOutOfBoundsException e) {
                 System.out.println("This integer does not correspond to any barangay. Please try again.");
                 continue;
@@ -120,7 +116,7 @@ public class Main {
             break;
         }
 
-        System.out.printf("You live in: %s, %s, %s, %s", region.get("region_name"), province.get("province_name"), city.get("city_name"), barangay.get("barangay_name"));
+        System.out.printf("You live in: %s, %s, %s, %s\n", region.get("region_name"), province.get("province_name"), city.get("city_name"), barangay.get("brgy_name"));
     }
 
     public static int get_inputInt() {
