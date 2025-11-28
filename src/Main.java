@@ -1,6 +1,5 @@
 import java.security.NoSuchAlgorithmException;
 import java.sql.*;
-import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -24,35 +23,48 @@ public class Main {
     public static void main(String[] args) {
         if (!connect()) return;
 
-        displayChoice();
+        displayLoggedOutChoices();
         loop: while (true) {
             int input = get_inputInt();
 
-
+            if (userManager.getCurrentUser() == null) {
                 switch (input) {
                     case 0:
                         System.out.println("Goodbye!");
                         break loop;
                     case 1:
                         userManager.register(conn);
-                        displayChoice();
+                        displayLoggedOutChoices();
                         break;
                     case 2:
                         userManager.login(conn);
-                        displayChoice();
+                        displayLoggedOutChoices();
                         break;
                     case 3:
                         testAddresses();
-                        displayChoice();
+                        displayLoggedOutChoices();
                         break;
                     default:
                         System.out.println("Please choose an integer from 0 to 2.");
                 }
-
+            } else {
+                switch (input) {
+                    case -1:
+                        System.out.println("Goodbye!");
+                        break loop;
+                    case 0:
+                        userManager.logout();
+                        System.out.println("Until next time, " + userManager.getCurrentUser().get_first_name() + "!");
+                        break;
+                    case 1:
+                        //NOTE: CREATE USER INPUTTER TEST
+                        break;
+                }
+            }
         }
     }
 
-    private static void displayChoice() {
+    private static void displayLoggedOutChoices() {
         System.out.println("(1) Register new user.");
         System.out.println("(2) Log-in existing user.");
         System.out.println("(0) Exit.");

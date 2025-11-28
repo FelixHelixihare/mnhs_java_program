@@ -16,6 +16,13 @@ public class UserManager {
     public UserManager() throws NoSuchAlgorithmException {
     }
 
+    public User getCurrentUser() {
+        return currentUser;
+    }
+    public void logout() {
+        currentUser = null;
+    }
+
     public void register(Connection conn) {
         System.out.print("Enter First Name: ");
         String firstName = scanner.nextLine();
