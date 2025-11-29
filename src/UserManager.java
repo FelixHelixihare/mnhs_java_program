@@ -7,13 +7,14 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 public class UserManager {
-    private final Scanner scanner = new Scanner(System.in);
+    private final Scanner scanner;
     private final SecureRandom random = new SecureRandom();
     private final MessageDigest messageDigest = MessageDigest.getInstance("SHA-512");
 
     private static User currentUser = null;
 
-    public UserManager() throws NoSuchAlgorithmException {
+    public UserManager(Scanner scanner) throws NoSuchAlgorithmException {
+        this.scanner = scanner;
     }
 
     public User getCurrentUser() {
@@ -28,9 +29,9 @@ public class UserManager {
         String firstName = scanner.nextLine();
         System.out.print("Enter Last Name: ");
         String lastName = scanner.nextLine();
-        System.out.print("Enter Middle Name: ");
+        System.out.print("Enter Middle Name (leave blank if not applicable): ");
         String middleName = scanner.nextLine();
-        System.out.print("Enter Name Extension (e.g. Jr., Sr. II, III, etc.; leave blank if not applicable).\n>");
+        System.out.print("Enter Name Extension (e.g. Jr., Sr. II, III, etc.; leave blank if not applicable).\n> ");
         String extensionName = scanner.nextLine();
 
         System.out.print("Enter Birthdate (YYYY-MM-DD): ");
@@ -108,7 +109,7 @@ public class UserManager {
         }
     }
 
-    public void login(Connection conn) {
+    public boolean login(Connection conn) {
         System.out.print("Enter username: ");
         String username;
         while (true) {
@@ -126,7 +127,7 @@ public class UserManager {
                 }
             } catch (SQLException e) {
                 System.err.println(e.getMessage());
-                return;
+                return false;
             }
         }
 
@@ -176,6 +177,8 @@ public class UserManager {
         } catch (SQLException e) {
             //System.err.println(e.getMessage());
             e.printStackTrace();
+            return false;
         }
+        return true;
     }
 }

@@ -129,4 +129,17 @@ public class Student {
             return new Student(this);
         }
     }
+
+    public String get_first_name() {return student_name.first_name;}
+    public String get_last_name() {return student_name.last_name;}
+    public String get_middle_name() {return student_name.middle_name;}
+    public String get_middle_initial() {return student_name.get_middle_initial();}
+    public String get_extension_name() {return student_name.extension_name;}
+
+    public String get_lfm_name() {return student_name.get_lfm_name();}
+    public String get_fml_name() {return student_name.get_fml_name();}
+    public String get_full_name() {return student_name.get_full_name();}
+
+    public String getStudent_birthdate() {return student_birthdate.toString();}
+    public String getStudent_dateCreated() {return student_dateCreated.toString();}
 }

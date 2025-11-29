@@ -2,12 +2,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class AddressManager {
+    private final Scanner scanner;
+
     private List<Map<String, Object>> regionList = new ArrayList<>();
     private List<Map<String, Object>> provinceList = new ArrayList<>();
     private List<Map<String, Object>> cityList = new ArrayList<>();
@@ -17,7 +16,8 @@ public class AddressManager {
     private Map<String, List<Map<String, Object>>> citiesInProvinces = new HashMap<>();
     private Map<String, List<Map<String, Object>>> barangaysInCities = new HashMap<>();
 
-    public AddressManager() {
+    public AddressManager(Scanner scanner) {
+        this.scanner = scanner;
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             regionList =    objectMapper.readValue(new File("data/region.json"), objectMapper.getTypeFactory().constructCollectionType(List.class, Map.class));
@@ -68,4 +68,91 @@ public class AddressManager {
     public Map<String, Object> getProvince  (String region_code, int index) throws IndexOutOfBoundsException    {return provincesInRegions.get(region_code).get(index);}
     public Map<String, Object> getCity      (String province_code, int index) throws IndexOutOfBoundsException  {return citiesInProvinces.get(province_code).get(index);}
     public Map<String, Object> getBarangay  (String city_code, int index) throws IndexOutOfBoundsException      {return barangaysInCities.get(city_code).get(index);}
+
+    public Address createAddress() {
+        show_region_choices();
+        Map<String, Object> region;
+        Map<String, Object> province;
+        Map<String, Object> city;
+        Map<String, Object> barangay;
+        String street;
+
+        while (true) {
+            int input = get_inputInt();
+
+            try {
+                region = getRegion(input);
+            } catch (IndexOutOfBoundsException e) {
+                System.out.println("That integer does not correspond to any region. Please try again.");
+                continue;
+            }
+            break;
+        }
+
+        show_province_choices((String) region.get("region_code"));
+        while (true) {
+            int input = get_inputInt();
+
+            try {
+                province = getProvince((String) region.get("region_code"), input);
+            } catch (IndexOutOfBoundsException e) {
+                System.out.println("This integer does not correspond to any province. Please try again.");
+                continue;
+            }
+            break;
+        }
+
+        show_city_choices((String) province.get("province_code"));
+        while (true) {
+            int input = get_inputInt();
+
+            try {
+                city = getCity((String) province.get("province_code"), input);
+            } catch (IndexOutOfBoundsException e) {
+                System.out.println("This integer does not correspond to any city. Please try again.");
+                continue;
+            }
+            break;
+        }
+
+        show_barangay_choices((String) city.get("city_code"));
+        while (true) {
+            int input = get_inputInt();
+
+            try {
+                barangay = getBarangay((String) city.get("city_code"), input);
+            } catch (IndexOutOfBoundsException e) {
+                System.out.println("This integer does not correspond to any barangay. Please try again.");
+                continue;
+            }
+            break;
+        }
+
+        System.out.print("Enter Street Address: ");
+        street = scanner.nextLine();
+
+        return new Address(
+                (String) barangay.get("brgy_code"),
+                (String) region.get("region_name"),
+                (String) province.get("province_name"),
+                (String) city.get("city_name"),
+                (String) barangay.get("brgy_name"),
+                street
+        );
+    }
+
+    public int get_inputInt() {
+        int input;
+        while (true) {
+            System.out.print("> ");
+            try {
+                input = Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("That is not an integer.");
+                continue;
+            }
+            break;
+        }
+        return input;
+    }
 }

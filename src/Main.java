@@ -1,6 +1,5 @@
 import java.security.NoSuchAlgorithmException;
 import java.sql.*;
-import java.util.Map;
 import java.util.Scanner;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
@@ -10,11 +9,12 @@ public class Main {
     private static final String url = "jdbc:sqlite:db/my.db";
     private static final Scanner scanner = new Scanner(System.in);
     private static final UserManager userManager;
-    private static final AddressManager addressManager = new AddressManager();
+    private static final AddressManager addressManager = new AddressManager(scanner);
+    private static final StudentManager studentManager = new StudentManager(scanner);
 
     static {
         try {
-            userManager = new UserManager();
+            userManager = new UserManager(scanner);
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
@@ -37,12 +37,8 @@ public class Main {
                         displayLoggedOutChoices();
                         break;
                     case 2:
-                        userManager.login(conn);
-                        displayLoggedOutChoices();
-                        break;
-                    case 3:
-                        testAddresses();
-                        displayLoggedOutChoices();
+                        if (userManager.login(conn)) displayLoggedInChoices();
+                        else displayLoggedOutChoices();
                         break;
                     default:
                         System.out.println("Please choose an integer from 0 to 2.");
@@ -53,11 +49,13 @@ public class Main {
                         System.out.println("Goodbye!");
                         break loop;
                     case 0:
-                        userManager.logout();
                         System.out.println("Until next time, " + userManager.getCurrentUser().get_first_name() + "!");
+                        userManager.logout();
+                        displayLoggedOutChoices();
                         break;
                     case 1:
-                        //NOTE: CREATE USER INPUTTER TEST
+                        studentManager.insertStudent(conn);
+                        displayLoggedInChoices();
                         break;
                 }
             }
@@ -70,64 +68,10 @@ public class Main {
         System.out.println("(0) Exit.");
     }
 
-    public static void testAddresses() {
-        addressManager.show_region_choices();
-        Map<String, Object> region;
-        Map<String, Object> province;
-        Map<String, Object> city;
-        Map<String, Object> barangay;
-        while (true) {
-            int input = get_inputInt();
-
-            try {
-                region = addressManager.getRegion(input);
-            } catch (IndexOutOfBoundsException e) {
-                System.out.println("That integer does not correspond to any region. Please try again.");
-                continue;
-            }
-            break;
-        }
-
-        addressManager.show_province_choices((String) region.get("region_code"));
-        while (true) {
-            int input = get_inputInt();
-
-            try {
-                province = addressManager.getProvince((String) region.get("region_code"), input);
-            } catch (IndexOutOfBoundsException e) {
-                System.out.println("This integer does not correspond to any province. Please try again.");
-                continue;
-            }
-            break;
-        }
-
-        addressManager.show_city_choices((String) province.get("province_code"));
-        while (true) {
-            int input = get_inputInt();
-
-            try {
-                city = addressManager.getCity((String) province.get("province_code"), input);
-            } catch (IndexOutOfBoundsException e) {
-                System.out.println("This integer does not correspond to any city. Please try again.");
-                continue;
-            }
-            break;
-        }
-
-        addressManager.show_barangay_choices((String) city.get("city_code"));
-        while (true) {
-            int input = get_inputInt();
-
-            try {
-                barangay = addressManager.getBarangay((String) city.get("city_code"), input);
-            } catch (IndexOutOfBoundsException e) {
-                System.out.println("This integer does not correspond to any barangay. Please try again.");
-                continue;
-            }
-            break;
-        }
-
-        System.out.printf("You live in: %s, %s, %s, %s\n", region.get("region_name"), province.get("province_name"), city.get("city_name"), barangay.get("brgy_name"));
+    private static void displayLoggedInChoices() {
+        System.out.println("(1) Create new student.");
+        System.out.println("(0) Log out.");
+        System.out.println("(-1) Exit.");
     }
 
     public static int get_inputInt() {
