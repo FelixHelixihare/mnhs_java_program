@@ -22,6 +22,7 @@ public class Main {
 
     public static void main(String[] args) {
         if (!connect()) return;
+        studentManager.loadStudents(conn);
 
         displayLoggedOutChoices();
         loop: while (true) {
@@ -57,6 +58,12 @@ public class Main {
                         studentManager.insertStudent(conn);
                         displayLoggedInChoices();
                         break;
+                    case 2:
+                        studentManager.showStudents(conn);
+                        displayLoggedInChoices();
+                        break;
+                    default:
+                        System.out.println("Please choose an integer from -1 to 2");
                 }
             }
         }
@@ -70,6 +77,7 @@ public class Main {
 
     private static void displayLoggedInChoices() {
         System.out.println("(1) Create new student.");
+        System.out.println("(2) Inspect students.");
         System.out.println("(0) Log out.");
         System.out.println("(-1) Exit.");
     }

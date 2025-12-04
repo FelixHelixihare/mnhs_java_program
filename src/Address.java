@@ -14,4 +14,9 @@ public class Address {
         this.barangay = barangay;
         this.street = street;
     }
+
+    public String toString() {
+        return province + ", " + city + ", " + barangay +
+                (street.isEmpty() ? ", " + street : "");
+    }
 }
