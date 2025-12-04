@@ -18,6 +18,7 @@ public class Student {
     private Timestamp student_dateCreated;
     private Address student_address;
     private Address student_birthplace;
+    private Timestamp student_datemodified;
 
     public Student(Student student) {
         this.student_id = student.student_id;
@@ -36,6 +37,7 @@ public class Student {
         this.student_dateCreated = student.student_dateCreated;
         this.student_address = student.student_address;
         this.student_birthplace = student.student_birthplace;
+        this.student_datemodified = student.student_datemodified;
     }
 
     public Student(Builder builder) {
@@ -55,6 +57,7 @@ public class Student {
         this.student_dateCreated = builder.student_dateCreated;
         this.student_address = builder.student_address;
         this.student_birthplace = builder.student_birthplace;
+        this.student_datemodified = builder.student_datemodified;
     }
 
     public void copy(Student student) {
@@ -74,6 +77,8 @@ public class Student {
         this.student_dateCreated = student.student_dateCreated;
         this.student_address = student.student_address;
         this.student_birthplace = student.student_birthplace;
+        this.student_datemodified = student.student_datemodified;
+
     }
 
     public static class Builder {
@@ -93,6 +98,7 @@ public class Student {
         private Timestamp student_dateCreated;
         private Address student_address;
         private Address student_birthplace;
+        private Timestamp student_datemodified;
 
         public static Builder newInstance() {
             return new Builder();
@@ -161,6 +167,10 @@ public class Student {
         }
         public Builder setBirthplace(Address birthplace) {
             this.student_birthplace = birthplace;
+            return this;
+        }
+        public Builder setDateModified(Timestamp dateModified) {
+            this.student_datemodified = dateModified;
             return this;
         }
         public Student build() {
@@ -291,6 +301,6 @@ public class Student {
         System.out.println("(24) Guardian Name Extension: " + (student_guardian_name.extension_name.isEmpty() ? "N/A" : student_guardian_name.extension_name));
         System.out.println("(25) Address: " + student_address.toString());
         System.out.println("(26) Birthplace: " + student_birthplace.toString());
-        System.out.println("(0) Back.");
+        System.out.println("(0) Back / Apply Changes.");
     }
 }

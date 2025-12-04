@@ -7,12 +7,41 @@ public class StudentManager {
     private final AddressManager addressManager;
     private List<Student> studentList;
 
-    private final List<String> maleWords = Arrays.asList("male", "m", "boy", "boys");
-    private final List<String> femaleWords = Arrays.asList("female", "f", "girl", "girls");
+    private final List<String> maleWords = Arrays.asList("m", "male", "boy", "boys");
+    private final List<String> femaleWords = Arrays.asList("f", "female", "girl", "girls");
+    private final List<String> yesWords = Arrays.asList("y", "yes", "true");
+    private final List<String> noWords = Arrays.asList("n", "no", "false");
 
     public StudentManager(Scanner scanner) {
         this.scanner = scanner;
         this.addressManager = new AddressManager(scanner);
+    }
+
+    private int get_inputInt() {
+        int input;
+        while (true) {
+            System.out.print("> ");
+            try {
+                input = Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("That is not an integer.");
+                continue;
+            }
+            break;
+        }
+        return input;
+    }
+
+    private boolean get_booleanChoice(List<String> trueWords, List<String> falseWords) {
+        while (true) {
+            String input = scanner.nextLine();
+            if (falseWords.contains(input.toLowerCase())) {
+                return false;
+            } else if (trueWords.contains(input.toLowerCase())) {
+                return true;
+            }
+            System.out.printf("Please choose either %s or %s: ", falseWords.getFirst().toUpperCase(), trueWords.getFirst().toUpperCase());
+        }
     }
 
     public void insertStudent(Connection conn) {
@@ -38,18 +67,7 @@ public class StudentManager {
         }
 
         System.out.print("Enter Sex (M/F): ");
-        boolean sex; //false = male; true = female
-        while (true) {
-            String input = scanner.nextLine();
-            if (maleWords.contains(input.toLowerCase())) {
-                sex = false;
-                break;
-            } else if (femaleWords.contains(input.toLowerCase())) {
-                sex = true;
-                break;
-            }
-            System.out.print("Please enter either M for male, or F for female.\n> ");
-        }
+        boolean sex = get_booleanChoice(femaleWords, maleWords); //false = male; true = female
 
         System.out.print("Enter Mother Tongue (e.g. Sinugbuanong Binisaya): ");
         String motherTongue = scanner.nextLine();
@@ -60,21 +78,7 @@ public class StudentManager {
         System.out.print("Enter Indigenous People (leave blank if not applicable): ");
         String indigenousPeople = scanner.nextLine();
         System.out.print("Enter 4Ps Household ID number (leave blank if not applicable).\n");
-        int fourPs;
-        while (true) {
-            System.out.println("> ");
-            String input = scanner.nextLine();
-            if (input.isEmpty()) {
-                fourPs = Integer.MIN_VALUE;
-                break;
-            }
-            try {
-                fourPs = Integer.parseInt(input);
-                break;
-            } catch (NumberFormatException e) {
-                System.out.println("That is not an integer. Please try again.");
-            }
-        }
+        int fourPs = get_inputInt();
 
         System.out.print("Enter Disability (leave blank if not applicable): ");
         String disability = scanner.nextLine();
@@ -218,23 +222,9 @@ public class StudentManager {
                 .setDateCreated(now)
                 .setAddress(address)
                 .setBirthplace(birthplace)
+                .setDateModified(now)
                 .build();
         studentList.add(student);
-    }
-
-    private int get_inputInt() {
-        int input;
-        while (true) {
-            System.out.print("> ");
-            try {
-                input = Integer.parseInt(scanner.nextLine());
-            } catch (NumberFormatException e) {
-                System.out.println("That is not an integer.");
-                continue;
-            }
-            break;
-        }
-        return input;
     }
 
     public void loadStudents(Connection conn) {
@@ -297,6 +287,7 @@ public class StudentManager {
                                 resultSet.getString("student_birthplace_barangay"),
                                 resultSet.getString("student_birthplace_street")
                         ))
+                        .setDateModified(resultSet.getTimestamp("student_datemodified"))
                         .build();
                 studentList.add(newStudent);
             }
@@ -308,17 +299,18 @@ public class StudentManager {
         this.studentList = studentList;
     }
 
-    public void showStudents(Connection conn) {
+    public Student showStudents(Connection conn) {
         for (int i = 0; i < studentList.size(); i++) {
             Student s = studentList.get(i);
-            System.out.printf("(%s) %s%n", i, s.get_fml_name());
+            System.out.printf("(%s) %s%n", i+1, s.get_fml_name());
         }
+        System.out.println("(0) Back.");
 
         while (true) {
             int input = get_inputInt();
+            if (input == 0) return null;
             try {
-                studentList.get(input).showValues();
-                break;
+                return studentList.get(input-1);
             } catch (IndexOutOfBoundsException e) {
                 System.out.println("That integer does not correspond to any student.");
             }
@@ -329,31 +321,32 @@ public class StudentManager {
         boolean changed = false;
         Student dummyStudent = new Student(student);
         loop: while (true) {
+            dummyStudent.showValues();
             int input = get_inputInt();
             switch (input) {
                 case 1:
                     System.out.print("Enter new First Name: ");
                     String newFirstName = scanner.nextLine();
                     dummyStudent.set_first_name(newFirstName);
-                    dummyStudent.showValues();
+                    changed = true;
                     break;
                 case 2:
                     System.out.print("Enter new Last Name: ");
                     String newLastName = scanner.nextLine();
                     dummyStudent.set_last_name(newLastName);
-                    dummyStudent.showValues();
+                    changed = true;
                     break;
                 case 3:
                     System.out.print("Enter new Middle Name: ");
                     String newMiddleName = scanner.nextLine();
                     dummyStudent.set_middle_name(newMiddleName);
-                    dummyStudent.showValues();
+                    changed = true;
                     break;
                 case 4:
                     System.out.print("Enter new Name Extension (e.g. Jr., Sr. II, III, etc.; leave blank if not applicable).\n> ");
                     String newExtensionName = scanner.nextLine();
                     dummyStudent.set_extension_name(newExtensionName);
-                    dummyStudent.showValues();
+                    changed = true;
                     break;
                 case 5:
                     System.out.print("Enter new Birthdate (YYYY-MM-DD): ");
@@ -367,143 +360,133 @@ public class StudentManager {
                         }
                     }
                     dummyStudent.set_birthdate(birthdate);
-                    dummyStudent.showValues();
+                    changed = true;
                     break;
                 case 6:
                     System.out.print("Enter new Sex (M/F): ");
-                    boolean sex; //false = male; true = female
-                    while (true) {
-                        String i = scanner.nextLine();
-                        if (maleWords.contains(i.toLowerCase())) {
-                            sex = false;
-                            break;
-                        } else if (femaleWords.contains(i.toLowerCase())) {
-                            sex = true;
-                            break;
-                        }
-                        System.out.print("Please enter either M for male, or F for female.\n> ");
-                    }
+                    boolean sex = get_booleanChoice(femaleWords, maleWords);
                     dummyStudent.set_sex(sex);
-                    dummyStudent.showValues();
+                    changed = true;
                     break;
                 case 7:
                     System.out.print("Enter new Mother Tongue: ");
                     String newMotherTongue = scanner.nextLine();
                     dummyStudent.set_mother_tongue(newMotherTongue);
-                    dummyStudent.showValues();
+                    changed = true;
                     break;
                 case 8:
                     System.out.print("Enter new Birth Certificate Number: ");
                     String newBCN = scanner.nextLine();
                     dummyStudent.set_birth_certificate_number(newBCN);
-                    dummyStudent.showValues();
+                    changed = true;
                     break;
                 case 9:
                     System.out.println("Enter new Learner's Reference Number.");
                     int newLRN = get_inputInt();
                     dummyStudent.set_LRN(newLRN);
-                    dummyStudent.showValues();
+                    changed = true;
                     break;
                 case 10:
                     System.out.print("Enter new Indigenous People: ");
                     String indigenousPeople = scanner.nextLine();
                     dummyStudent.set_indigenous_people(indigenousPeople);
-                    dummyStudent.showValues();
+                    changed = true;
                     break;
                 case 11:
                     System.out.println("Enter new 4Ps Household Number.");
                     int new4ps = get_inputInt();
                     dummyStudent.set_4ps(new4ps);
-                    dummyStudent.showValues();
+                    changed = true;
                     break;
                 case 12:
                     System.out.print("Enter new Disability: ");
                     String newDisability = scanner.nextLine();
                     dummyStudent.set_disability(newDisability);
+                    changed = true;
                     break;
                 case 13:
                     System.out.print("Enter new Father's First Name: ");
                     String newFatherFirstName = scanner.nextLine();
                     dummyStudent.set_father_first_name(newFatherFirstName);
-                    dummyStudent.showValues();
+                    changed = true;
                     break;
                 case 14:
                     System.out.print("Enter new Father's Last Name: ");
                     String newFatherLastName = scanner.nextLine();
                     dummyStudent.set_father_last_name(newFatherLastName);
-                    dummyStudent.showValues();
+                    changed = true;
                     break;
                 case 15:
                     System.out.print("Enter new Father's Middle Name: ");
                     String newFatherMiddleName = scanner.nextLine();
                     dummyStudent.set_father_middle_name(newFatherMiddleName);
-                    dummyStudent.showValues();
+                    changed = true;
                     break;
                 case 16:
                     System.out.print("Enter new Father's Name Extension (e.g. Jr., Sr. II, III, etc.; leave blank if not applicable).\n> ");
                     String newFatherExtensionName = scanner.nextLine();
                     dummyStudent.set_father_extension_name(newFatherExtensionName);
-                    dummyStudent.showValues();
+                    changed = true;
                     break;
                 case 17:
                     System.out.print("Enter new Mother's First Name: ");
                     String newMotherFirstName = scanner.nextLine();
                     dummyStudent.set_mother_first_name(newMotherFirstName);
-                    dummyStudent.showValues();
+                    changed = true;
                     break;
                 case 18:
                     System.out.print("Enter new Mother's Last Name: ");
                     String newMotherLastName = scanner.nextLine();
                     dummyStudent.set_mother_last_name(newMotherLastName);
-                    dummyStudent.showValues();
+                    changed = true;
                     break;
                 case 19:
                     System.out.print("Enter new Mother's Middle Name: ");
                     String newMotherMiddleName = scanner.nextLine();
                     dummyStudent.set_mother_middle_name(newMotherMiddleName);
-                    dummyStudent.showValues();
+                    changed = true;
                     break;
                 case 20:
                     System.out.print("Enter new Mother's Name Extension (e.g. Jr., Sr. II, III, etc.; leave blank if not applicable).\n> ");
                     String newMotherExtensionName = scanner.nextLine();
                     dummyStudent.set_mother_extension_name(newMotherExtensionName);
-                    dummyStudent.showValues();
+                    changed = true;
                     break;
                 case 21:
                     System.out.print("Enter new Guardian's First Name: ");
                     String newGuardianFirstName = scanner.nextLine();
                     dummyStudent.set_guardian_first_name(newGuardianFirstName);
-                    dummyStudent.showValues();
+                    changed = true;
                     break;
                 case 22:
                     System.out.print("Enter new Guardian's Last Name: ");
                     String newGuardianLastName = scanner.nextLine();
                     dummyStudent.set_guardian_last_name(newGuardianLastName);
-                    dummyStudent.showValues();
+                    changed = true;
                     break;
                 case 23:
                     System.out.print("Enter new Guardian's Middle Name: ");
                     String newGuardianMiddleName = scanner.nextLine();
                     dummyStudent.set_guardian_middle_name(newGuardianMiddleName);
-                    dummyStudent.showValues();
+                    changed = true;
                     break;
                 case 24:
                     System.out.print("Enter new Guardian's Name Extension (e.g. Jr., Sr. II, III, etc.; leave blank if not applicable).\n> ");
                     String newGuardianExtensionName = scanner.nextLine();
                     dummyStudent.set_guardian_extension_name(newGuardianExtensionName);
-                    dummyStudent.showValues();
+                    changed = true;
                     break;
                 case 25:
                     System.out.println("Enter Address.");
                     Address address = addressManager.createAddress();
                     dummyStudent.set_address(address);
-                    dummyStudent.showValues();
+                    changed = true;
                     break;
                 case 26:
                     System.out.println("Enter Birthplace.");
                     Address birthplace = addressManager.createAddress();
                     dummyStudent.set_birthplace(birthplace);
-                    dummyStudent.showValues();
+                    changed = true;
                     break;
                 case 0:
                     break loop;
@@ -512,9 +495,10 @@ public class StudentManager {
             }
         }
 
+        if (!changed) return;
         student.copy(dummyStudent);
         try {
-            String sql = "UPDATE student SET" +
+            String sql = "UPDATE student SET " +
                     "student_first_name = ?, " +
                     "student_last_name = ?, " +
                     "student_middle_name = ?, " +
@@ -590,11 +574,29 @@ public class StudentManager {
             preparedStatement.setString(34, student.get_birthplace_city());
             preparedStatement.setString(35, student.get_birthplace_province());
             preparedStatement.setString(36, student.get_birthplace_region());
-            preparedStatement.setInt(37, student.get_id());
-            preparedStatement.setTimestamp(38, new Timestamp(System.currentTimeMillis()));
+            preparedStatement.setTimestamp(37, new Timestamp(System.currentTimeMillis()));
+            preparedStatement.setInt(38, student.get_id());
             preparedStatement.executeUpdate();
         } catch(SQLException e) {
             System.err.println(e.getMessage());
         }
+    }
+
+    public void deleteStudent(Connection conn, Student student) {
+        System.out.printf("Do you really wish to delete %s? (Y/N): ", student.get_fml_name());
+        boolean confirm = get_booleanChoice(yesWords, noWords);
+        if (!confirm) return;
+
+        try {
+            String sql = "DELETE FROM student WHERE student_id=?";
+            PreparedStatement preparedStatement = conn.prepareStatement(sql);
+            preparedStatement.setInt(1, student.get_id());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+
+        System.out.printf("Successfully deleted %s.%n", student.get_fml_name());
+        studentList.remove(student);
     }
 }

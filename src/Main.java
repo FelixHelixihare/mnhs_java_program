@@ -45,6 +45,7 @@ public class Main {
                         System.out.println("Please choose an integer from 0 to 2.");
                 }
             } else {
+                Student s;
                 switch (input) {
                     case -1:
                         System.out.println("Goodbye!");
@@ -59,7 +60,13 @@ public class Main {
                         displayLoggedInChoices();
                         break;
                     case 2:
-                        studentManager.showStudents(conn);
+                        s = studentManager.showStudents(conn);
+                        if (s != null) studentManager.changeValue(conn, s);
+                        displayLoggedInChoices();
+                        break;
+                    case 3:
+                        s = studentManager.showStudents(conn);
+                        if (s != null) studentManager.deleteStudent(conn, s);
                         displayLoggedInChoices();
                         break;
                     default:
@@ -77,7 +84,8 @@ public class Main {
 
     private static void displayLoggedInChoices() {
         System.out.println("(1) Create new student.");
-        System.out.println("(2) Inspect students.");
+        System.out.println("(2) Show and Edit students.");
+        System.out.println("(3) Delete students.");
         System.out.println("(0) Log out.");
         System.out.println("(-1) Exit.");
     }
