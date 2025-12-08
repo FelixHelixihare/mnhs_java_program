@@ -25,6 +25,16 @@ public class Teacher {
     public String get_extension_name() {return teacher_name.extension_name;}
     public String get_lfm_name() {return teacher_name.get_lfm_name();}
     public String get_fml_name() {return teacher_name.get_fml_name();}
+    public String get_fml_name_with_title() {
+        String formatString;
+        if (teacher_sex) {
+            if (teacher_married) formatString = "Mrs. ";
+            else formatString = "Ms. ";
+        } else {
+            formatString = "Mr. ";
+        }
+        return formatString + get_fml_name();
+    }
     public String get_full_name() {return teacher_name.get_full_name();}
     public boolean get_sex() {return teacher_sex;}
     public boolean get_married() {return teacher_married;}

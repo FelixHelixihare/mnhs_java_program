@@ -4,9 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-public class AddressManager {
-    private final Scanner scanner;
-
+public class AddressManager extends AbstractDataManager {
     private List<Map<String, Object>> regionList = new ArrayList<>();
     private List<Map<String, Object>> provinceList = new ArrayList<>();
     private List<Map<String, Object>> cityList = new ArrayList<>();
@@ -17,7 +15,7 @@ public class AddressManager {
     private Map<String, List<Map<String, Object>>> barangaysInCities = new HashMap<>();
 
     public AddressManager(Scanner scanner) {
-        this.scanner = scanner;
+        super(scanner);
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             regionList =    objectMapper.readValue(new File("data/region.json"), objectMapper.getTypeFactory().constructCollectionType(List.class, Map.class));
@@ -203,20 +201,5 @@ public class AddressManager {
                 "",
                 zipcode
         );
-    }
-
-    public int get_inputInt() {
-        int input;
-        while (true) {
-            System.out.print("> ");
-            try {
-                input = Integer.parseInt(scanner.nextLine());
-            } catch (NumberFormatException e) {
-                System.out.println("That is not an integer.");
-                continue;
-            }
-            break;
-        }
-        return input;
     }
 }

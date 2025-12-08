@@ -6,15 +6,14 @@ import java.sql.*;
 import java.util.Arrays;
 import java.util.Scanner;
 
-public class UserManager {
-    private final Scanner scanner;
+public class UserManager extends AbstractDataManager {
     private final SecureRandom random = new SecureRandom();
     private final MessageDigest messageDigest = MessageDigest.getInstance("SHA-512");
 
     private static User currentUser = null;
 
     public UserManager(Scanner scanner) throws NoSuchAlgorithmException {
-        this.scanner = scanner;
+        super(scanner);
     }
 
     public User getCurrentUser() {

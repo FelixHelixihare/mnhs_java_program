@@ -60,12 +60,12 @@ public class Main {
                         displayLoggedInChoices();
                         break;
                     case 2:
-                        s = studentManager.showStudents(conn);
+                        s = studentManager.selectStudent(conn);
                         if (s != null) studentManager.changeValue(conn, s);
                         displayLoggedInChoices();
                         break;
                     case 3:
-                        s = studentManager.showStudents(conn);
+                        s = studentManager.selectStudent(conn);
                         if (s != null) studentManager.deleteStudent(conn, s);
                         displayLoggedInChoices();
                         break;

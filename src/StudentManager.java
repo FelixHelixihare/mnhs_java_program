@@ -2,46 +2,13 @@ import java.sql.*;
 import java.sql.Date;
 import java.util.*;
 
-public class StudentManager {
-    private final Scanner scanner;
+public class StudentManager extends AbstractDataManager {
     private final AddressManager addressManager;
     private static List<Student> studentList;
 
-    private static final List<String> maleWords = Arrays.asList("m", "male", "boy", "boys");
-    private static final List<String> femaleWords = Arrays.asList("f", "female", "girl", "girls");
-    private static final List<String> yesWords = Arrays.asList("y", "yes", "true");
-    private static final List<String> noWords = Arrays.asList("n", "no", "false");
-
     public StudentManager(Scanner scanner) {
-        this.scanner = scanner;
+        super(scanner);
         this.addressManager = new AddressManager(scanner);
-    }
-
-    private int get_inputInt() {
-        int input;
-        while (true) {
-            System.out.print("> ");
-            try {
-                input = Integer.parseInt(scanner.nextLine());
-            } catch (NumberFormatException e) {
-                System.out.println("That is not an integer.");
-                continue;
-            }
-            break;
-        }
-        return input;
-    }
-
-    private boolean get_booleanChoice(List<String> trueWords, List<String> falseWords) {
-        while (true) {
-            String input = scanner.nextLine();
-            if (falseWords.contains(input.toLowerCase())) {
-                return false;
-            } else if (trueWords.contains(input.toLowerCase())) {
-                return true;
-            }
-            System.out.printf("Please choose either %s or %s: ", falseWords.getFirst().toUpperCase(), trueWords.getFirst().toUpperCase());
-        }
     }
 
     public void insertStudent(Connection conn) {
@@ -90,8 +57,8 @@ public class StudentManager {
         }
         System.out.println("Enter Birthplace.");
         Address birthplace = addressManager.createShortAddress();
-
         Timestamp now = new Timestamp(System.currentTimeMillis());
+        int student_id = Integer.MIN_VALUE;
 
         try {
             String sql = "INSERT INTO student(" +
@@ -142,7 +109,8 @@ public class StudentManager {
                     "student_birthplace_zipcode," +
                     "student_date_created," +
                     "student_date_modified) " +
-                    "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"; //--ALTER!!! MULTIPLE COLUMNS ADDED TO TABLE-- ALTERRED!
+                    "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) " + //--ALTER!!! MULTIPLE COLUMNS ADDED TO TABLE-- ALTERRED!
+                    "RETURNING student_id";
             PreparedStatement preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setString(1, studentName.first_name);
             preparedStatement.setString(2, studentName.last_name);
@@ -191,13 +159,15 @@ public class StudentManager {
             preparedStatement.setString(45, birthplace.zipcode);
             preparedStatement.setTimestamp(46, now);
             preparedStatement.setTimestamp(47, now);
-            preparedStatement.executeUpdate();
+            ResultSet resultSet = preparedStatement.executeQuery();
+            student_id = resultSet.getInt(resultSet.getInt("student_id"));
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
         System.out.printf("%s successfully added.%n", studentName.get_fml_name());
         Student student = Student.Builder.newInstance()
+                .setId(student_id)
                 .setName(studentName)
                 .setBirthdate(birthdate)
                 .setSex(sex)
@@ -301,7 +271,7 @@ public class StudentManager {
         StudentManager.studentList = studentList;
     }
 
-    public Student showStudents(Connection conn) {
+    public Student selectStudent(Connection conn) {
         for (int i = 0; i < studentList.size(); i++) {
             Student s = studentList.get(i);
             System.out.printf("(%s) %s%n", i+1, s.get_fml_name());
