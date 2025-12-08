@@ -76,6 +76,7 @@ public class AddressManager {
         Map<String, Object> city;
         Map<String, Object> barangay;
         String street;
+        String zipcode;
 
         while (true) {
             int input = get_inputInt();
@@ -131,13 +132,76 @@ public class AddressManager {
         System.out.print("Enter Street Address: ");
         street = scanner.nextLine();
 
+        System.out.print("Enter ZIP code: ");
+        zipcode = scanner.nextLine();
+
         return new Address(
                 (String) barangay.get("brgy_code"),
                 (String) region.get("region_name"),
                 (String) province.get("province_name"),
                 (String) city.get("city_name"),
                 (String) barangay.get("brgy_name"),
-                street
+                street,
+                zipcode
+        );
+    }
+
+    public Address createShortAddress() {
+        show_region_choices();
+        Map<String, Object> region;
+        Map<String, Object> province;
+        Map<String, Object> city;
+        String zipcode;
+
+        while (true) {
+            int input = get_inputInt();
+
+            try {
+                region = getRegion(input);
+            } catch (IndexOutOfBoundsException e) {
+                System.out.println("That integer does not correspond to any region. Please try again.");
+                continue;
+            }
+            break;
+        }
+
+        show_province_choices((String) region.get("region_code"));
+        while (true) {
+            int input = get_inputInt();
+
+            try {
+                province = getProvince((String) region.get("region_code"), input);
+            } catch (IndexOutOfBoundsException e) {
+                System.out.println("This integer does not correspond to any province. Please try again.");
+                continue;
+            }
+            break;
+        }
+
+        show_city_choices((String) province.get("province_code"));
+        while (true) {
+            int input = get_inputInt();
+
+            try {
+                city = getCity((String) province.get("province_code"), input);
+            } catch (IndexOutOfBoundsException e) {
+                System.out.println("This integer does not correspond to any city. Please try again.");
+                continue;
+            }
+            break;
+        }
+
+        System.out.print("Enter ZIP code: ");
+        zipcode = scanner.nextLine();
+
+        return new Address(
+                (String) city.get("city_code"),
+                (String) region.get("region_name"),
+                (String) province.get("province_name"),
+                (String) city.get("city_name"),
+                "",
+                "",
+                zipcode
         );
     }
 

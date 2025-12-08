@@ -8,17 +8,24 @@ public class Student {
     private boolean student_sex;
     private String student_mother_tongue;
     private String student_birth_certificate_number;
-    private int student_lrn;
+    private String student_lrn;
     private String student_indigenous_people;
-    private int student_4ps;
+    private String student_4ps;
     private String student_disability;
     private Name student_father_name;
     private Name student_mother_name;
     private Name student_guardian_name;
-    private Timestamp student_dateCreated;
-    private Address student_address;
+    private Address student_current_address;
+    private Address student_permanent_address;
     private Address student_birthplace;
-    private Timestamp student_datemodified;
+
+    private Strand student_strand;
+    private Section student_section;
+
+    private Timestamp student_date_created;
+    private Timestamp student_date_modified;
+    private User student_user_created;
+    private User student_user_modified;
 
     public Student(Student student) {
         this.student_id = student.student_id;
@@ -34,10 +41,15 @@ public class Student {
         this.student_father_name = student.student_father_name;
         this.student_mother_name = student.student_mother_name;
         this.student_guardian_name = student.student_guardian_name;
-        this.student_dateCreated = student.student_dateCreated;
-        this.student_address = student.student_address;
+        this.student_current_address = student.student_current_address;
+        this.student_permanent_address = student.student_permanent_address;
         this.student_birthplace = student.student_birthplace;
-        this.student_datemodified = student.student_datemodified;
+        this.student_strand = student.student_strand;
+        this.student_section = student.student_section;
+        this.student_date_created = student.student_date_created;
+        this.student_date_modified = student.student_date_modified;
+        this.student_user_created = student.student_user_created;
+        this.student_user_modified = student.student_user_modified;
     }
 
     public Student(Builder builder) {
@@ -54,10 +66,15 @@ public class Student {
         this.student_father_name = builder.student_father_name;
         this.student_mother_name = builder.student_mother_name;
         this.student_guardian_name = builder.student_guardian_name;
-        this.student_dateCreated = builder.student_dateCreated;
-        this.student_address = builder.student_address;
+        this.student_current_address = builder.student_current_address;
+        this.student_permanent_address = builder.student_permanent_address;
         this.student_birthplace = builder.student_birthplace;
-        this.student_datemodified = builder.student_datemodified;
+        this.student_strand = builder.student_strand;
+        this.student_section = builder.student_section;
+        this.student_date_created = builder.student_date_created;
+        this.student_date_modified = builder.student_date_modified;
+        this.student_user_created = builder.student_user_created;
+        this.student_user_modified = builder.student_user_modified;
     }
 
     public void copy(Student student) {
@@ -74,10 +91,15 @@ public class Student {
         this.student_father_name = student.student_father_name;
         this.student_mother_name = student.student_mother_name;
         this.student_guardian_name = student.student_guardian_name;
-        this.student_dateCreated = student.student_dateCreated;
-        this.student_address = student.student_address;
+        this.student_current_address = student.student_current_address;
+        this.student_permanent_address = student.student_permanent_address;
         this.student_birthplace = student.student_birthplace;
-        this.student_datemodified = student.student_datemodified;
+        this.student_strand = student.student_strand;
+        this.student_section = student.student_section;
+        this.student_date_created = student.student_date_created;
+        this.student_date_modified = student.student_date_modified;
+        this.student_user_created = student.student_user_created;
+        this.student_user_modified = student.student_user_modified;
 
     }
 
@@ -88,17 +110,24 @@ public class Student {
         private boolean student_sex;
         private String student_mother_tongue;
         private String student_birth_certificate_number;
-        private int student_lrn;
+        private String student_lrn;
         private String student_indigenous_people;
-        private int student_4ps;
+        private String student_4ps;
         private String student_disability;
         private Name student_father_name;
         private Name student_mother_name;
         private Name student_guardian_name;
-        private Timestamp student_dateCreated;
-        private Address student_address;
+        private Address student_current_address;
+        private Address student_permanent_address;
         private Address student_birthplace;
-        private Timestamp student_datemodified;
+
+        private Strand student_strand;
+        private Section student_section;
+
+        private Timestamp student_date_created;
+        private Timestamp student_date_modified;
+        private User student_user_created;
+        private User student_user_modified;
 
         public static Builder newInstance() {
             return new Builder();
@@ -129,7 +158,7 @@ public class Student {
             this.student_birth_certificate_number = birthCertificateNumber;
             return this;
         }
-        public Builder setLRN(int lrn) {
+        public Builder setLRN(String lrn) {
             this.student_lrn = lrn;
             return this;
         }
@@ -137,7 +166,7 @@ public class Student {
             this.student_indigenous_people = ip;
             return this;
         }
-        public Builder set4Ps(int fourPs) {
+        public Builder set4Ps(String fourPs) {
             this.student_4ps = fourPs;
             return this;
         }
@@ -158,11 +187,15 @@ public class Student {
             return this;
         }
         public Builder setDateCreated(Timestamp dateCreated) {
-            this.student_dateCreated = dateCreated;
+            this.student_date_created = dateCreated;
             return this;
         }
-        public Builder setAddress(Address address) {
-            this.student_address = address;
+        public Builder setCurrentAddress(Address address) {
+            this.student_current_address = address;
+            return this;
+        }
+        public Builder setPermanentAddress(Address address) {
+            this.student_permanent_address = address;
             return this;
         }
         public Builder setBirthplace(Address birthplace) {
@@ -170,7 +203,7 @@ public class Student {
             return this;
         }
         public Builder setDateModified(Timestamp dateModified) {
-            this.student_datemodified = dateModified;
+            this.student_date_modified = dateModified;
             return this;
         }
         public Student build() {
@@ -189,15 +222,15 @@ public class Student {
     public String get_full_name() {return student_name.get_full_name();}
 
     public String get_birthdate_asString() {return student_birthdate.toString();}
-    public String get_dateCreated_asString() {return student_dateCreated.toString();}
+    public String get_dateCreated_asString() {return student_date_created.toString();}
 
     public Date get_birthdate() {return student_birthdate;}
     public boolean get_sex() {return student_sex;}
     public String get_mother_tongue() {return student_mother_tongue;}
     public String get_birth_certificate_number() {return student_birth_certificate_number;}
-    public int get_lrn() {return student_lrn;}
+    public String get_lrn() {return student_lrn;}
     public String get_indigenous_people() {return student_indigenous_people;}
-    public int get_4ps() {return student_4ps;}
+    public String get_4ps() {return student_4ps;}
     public String get_disability() {return student_disability;}
 
     public String get_father_first_name() {return student_father_name.first_name;}
@@ -227,13 +260,21 @@ public class Student {
     public String get_guardian_fml_name() {return student_guardian_name.get_fml_name();}
     public String get_guardian_full_name() {return student_guardian_name.get_full_name();}
 
-    public Address get_address() {return student_address;}
-    public String get_address_code() {return student_address.barangay_code;}
-    public String get_address_street() {return student_address.street;}
-    public String get_address_barangay() {return student_address.barangay;}
-    public String get_address_city() {return student_address.city;}
-    public String get_address_province() {return student_address.province;}
-    public String get_address_region() {return student_address.region;}
+    public Address get_current_address() {return student_current_address;}
+    public String get_current_address_code() {return student_current_address.barangay_code;}
+    public String get_current_address_street() {return student_current_address.street;}
+    public String get_current_address_barangay() {return student_current_address.barangay;}
+    public String get_current_address_city() {return student_current_address.city;}
+    public String get_current_address_province() {return student_current_address.province;}
+    public String get_current_address_region() {return student_current_address.region;}
+
+    public Address get_permanent_address() {return student_permanent_address;}
+    public String get_permanent_address_code() {return student_permanent_address.barangay_code;}
+    public String get_permanent_address_street() {return student_permanent_address.street;}
+    public String get_permanent_address_barangay() {return student_permanent_address.barangay;}
+    public String get_permanent_address_city() {return student_permanent_address.city;}
+    public String get_permanent_address_province() {return student_permanent_address.province;}
+    public String get_permanent_address_region() {return student_permanent_address.region;}
 
     public Address get_birthplace() {return student_birthplace;}
     public String get_birthplace_code() {return student_birthplace.barangay_code;}
@@ -252,9 +293,9 @@ public class Student {
     public void set_sex(boolean sex) {student_sex = sex;}
     public void set_mother_tongue(String motherTongue) {student_mother_tongue = motherTongue;}
     public void set_birth_certificate_number(String birthCertificateNumber) {student_birth_certificate_number = birthCertificateNumber;}
-    public void set_LRN(int lrn) {student_lrn = lrn;}
+    public void set_LRN(String lrn) {student_lrn = lrn;}
     public void set_indigenous_people(String indigenousPeople) {student_indigenous_people = indigenousPeople;}
-    public void set_4ps(int fourPs) {student_4ps = fourPs;}
+    public void set_4ps(String fourPs) {student_4ps = fourPs;}
     public void set_disability(String disability) {student_disability = disability;}
     public void set_father_first_name(String firstName) {student_father_name.first_name = firstName;}
     public void set_father_last_name(String lastName) {student_father_name.last_name = lastName;}
@@ -271,7 +312,8 @@ public class Student {
     public void set_guardian_middle_name(String middleName) {student_guardian_name.middle_name = middleName;}
     public void set_guardian_extension_name(String extensionName) {student_guardian_name.extension_name = extensionName;}
     public void set_guardian_name(Name name) {student_guardian_name = name;}
-    public void set_address(Address address) {student_address = address;}
+    public void set_current_address(Address address) {student_current_address = address;}
+    public void set_permanent_address(Address address) {student_permanent_address = address;}
     public void set_birthplace(Address birthplace) {student_birthplace = birthplace;}
 
     public void showValues() {
@@ -280,12 +322,12 @@ public class Student {
         System.out.println("(3) Middle Name: " + student_name.middle_name);
         System.out.println("(4) Name Extension: " + (student_name.extension_name.isEmpty() ? "N/A" : student_name.extension_name));
         System.out.println("(5) Birthdate: " + student_birthdate.toString());
-        System.out.println("(6) Sex: " + (student_sex ? "Male" : "Female"));
+        System.out.println("(6) Sex: " + (student_sex ? "Female" : "Male"));
         System.out.println("(7) Mother Tongue: " + student_mother_tongue);
         System.out.println("(8) Birth Certificate Number: " + student_birth_certificate_number);
         System.out.println("(9) Learner's Reference Number (LRN): " + student_lrn);
         System.out.println("(10) Indigenous People: " + (student_indigenous_people.isEmpty() ? "N/A" : student_indigenous_people));
-        System.out.println("(11) 4Ps Household Number: " + (student_4ps <= 0 ? "N/A" : student_4ps));
+        System.out.println("(11) 4Ps Household Number: " + (student_4ps.isEmpty() ? "N/A" : student_4ps));
         System.out.println("(12) Disability: " + (student_disability.isEmpty() ? "N/A" : student_disability));
         System.out.println("(13) Father First Name: " + student_father_name.first_name);
         System.out.println("(14) Father Last Name: " + student_father_name.last_name);
@@ -299,8 +341,9 @@ public class Student {
         System.out.println("(22) Guardian Last Name: " + student_guardian_name.last_name);
         System.out.println("(23) Guardian Middle Name: " + student_guardian_name.middle_name);
         System.out.println("(24) Guardian Name Extension: " + (student_guardian_name.extension_name.isEmpty() ? "N/A" : student_guardian_name.extension_name));
-        System.out.println("(25) Address: " + student_address.toString());
-        System.out.println("(26) Birthplace: " + student_birthplace.toString());
+        System.out.println("(25) Current Address: " + student_current_address.toString());
+        System.out.println("(26) Permanent Address: " + student_permanent_address.toString());
+        System.out.println("(27) Birthplace: " + student_birthplace.toString());
         System.out.println("(0) Back / Apply Changes.");
     }
 }

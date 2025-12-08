@@ -5,12 +5,12 @@ import java.util.*;
 public class StudentManager {
     private final Scanner scanner;
     private final AddressManager addressManager;
-    private List<Student> studentList;
+    private static List<Student> studentList;
 
-    private final List<String> maleWords = Arrays.asList("m", "male", "boy", "boys");
-    private final List<String> femaleWords = Arrays.asList("f", "female", "girl", "girls");
-    private final List<String> yesWords = Arrays.asList("y", "yes", "true");
-    private final List<String> noWords = Arrays.asList("n", "no", "false");
+    private static final List<String> maleWords = Arrays.asList("m", "male", "boy", "boys");
+    private static final List<String> femaleWords = Arrays.asList("f", "female", "girl", "girls");
+    private static final List<String> yesWords = Arrays.asList("y", "yes", "true");
+    private static final List<String> noWords = Arrays.asList("n", "no", "false");
 
     public StudentManager(Scanner scanner) {
         this.scanner = scanner;
@@ -45,15 +45,7 @@ public class StudentManager {
     }
 
     public void insertStudent(Connection conn) {
-        System.out.print("Enter First Name: ");
-        String firstName = scanner.nextLine();
-        System.out.print("Enter Last Name: ");
-        String lastName = scanner.nextLine();
-        System.out.print("Enter Middle Name (leave blank if not applicable): ");
-        String middleName = scanner.nextLine();
-        System.out.print("Enter Name Extension (e.g. Jr., Sr. II, III, etc.; leave blank if not applicable).\n> ");
-        String nameExtension = scanner.nextLine();
-        Name studentName = new Name(firstName, lastName, middleName, nameExtension);
+        Name studentName = Name.createName(scanner, "");
 
         System.out.print("Enter Birthdate (YYYY-MM-DD): ");
         Date birthdate;
@@ -74,49 +66,30 @@ public class StudentManager {
         System.out.print("Enter Birth Certificate Number: ");
         String birthCertificateNumber = scanner.nextLine();
         System.out.print("Enter Learner's Reference Number (LRN): ");
-        int lrn = get_inputInt();
+        String lrn = scanner.nextLine();
         System.out.print("Enter Indigenous People (leave blank if not applicable): ");
         String indigenousPeople = scanner.nextLine();
-        System.out.print("Enter 4Ps Household ID number (leave blank if not applicable).\n");
-        int fourPs = get_inputInt();
+        System.out.print("Enter 4Ps Household ID number (leave blank if not applicable).%n> ");
+        String fourPs = scanner.nextLine();
 
         System.out.print("Enter Disability (leave blank if not applicable): ");
         String disability = scanner.nextLine();
 
-        System.out.print("Enter Father First Name: ");
-        firstName = scanner.nextLine();
-        System.out.print("Enter Father Last Name: ");
-        lastName = scanner.nextLine();
-        System.out.print("Enter Father Middle Name (leave blank if not applicable): ");
-        middleName = scanner.nextLine();
-        System.out.print("Enter Father Name Extension (e.g. Jr., Sr. II, III, etc.; leave blank if not applicable).\n> ");
-        nameExtension = scanner.nextLine();
-        Name fatherName = new Name(firstName, lastName, middleName, nameExtension);
+        Name fatherName = Name.createName(scanner, "Father");
+        Name motherName = Name.createName(scanner, "Mother");
+        Name guardianName = Name.createName(scanner, "Guardian");
 
-        System.out.print("Enter Mother First Name: ");
-        firstName = scanner.nextLine();
-        System.out.print("Enter Mother Last Name: ");
-        lastName = scanner.nextLine();
-        System.out.print("Enter Mother Middle Name (leave blank if not applicable): ");
-        middleName = scanner.nextLine();
-        System.out.print("Enter Mother Name Extension (e.g. Jr., Sr. II, III, etc.; leave blank if not applicable).\n> ");
-        nameExtension = scanner.nextLine();
-        Name motherName = new Name(firstName, lastName, middleName, nameExtension);
-
-        System.out.print("Enter Guardian First Name: ");
-        firstName = scanner.nextLine();
-        System.out.print("Enter Guardian Last Name: ");
-        lastName = scanner.nextLine();
-        System.out.print("Enter Guardian Middle Name (leave blank if not applicable): ");
-        middleName = scanner.nextLine();
-        System.out.print("Enter Guardian Name Extension (e.g. Jr., Sr. II, III, etc.; leave blank if not applicable).\n> ");
-        nameExtension = scanner.nextLine();
-        Name guardianName = new Name(firstName, lastName, middleName, nameExtension);
-
-        System.out.println("Enter Address.");
+        System.out.println("Enter Current Address.");
         Address address = addressManager.createAddress();
+        System.out.print("Is Permanent Address same as Current Address? (Y/N) > ");
+        Address permanentAddress;
+        if (get_booleanChoice(yesWords, noWords)) {permanentAddress = new Address(address);}
+        else {
+            System.out.println("Enter Permanent Address.");
+            permanentAddress = addressManager.createAddress();
+        }
         System.out.println("Enter Birthplace.");
-        Address birthplace = addressManager.createAddress();
+        Address birthplace = addressManager.createShortAddress();
 
         Timestamp now = new Timestamp(System.currentTimeMillis());
 
@@ -146,21 +119,30 @@ public class StudentManager {
                     "student_guardian_last_name," +
                     "student_guardian_middle_name," +
                     "student_guardian_extension_name," +
-                    "student_dateCreated," +
-                    "student_address_code," +
-                    "student_address_street," +
-                    "student_address_barangay," +
-                    "student_address_city," +
-                    "student_address_province," +
-                    "student_address_region," +
+                    "student_current_address_code," +
+                    "student_current_address_street," +
+                    "student_current_address_barangay," +
+                    "student_current_address_city," +
+                    "student_current_address_province," +
+                    "student_current_address_region," +
+                    "student_current_address_zipcode," +
+                    "student_permanent_address_code," +
+                    "student_permanent_address_street," +
+                    "student_permanent_address_barangay," +
+                    "student_permanent_address_city," +
+                    "student_permanent_address_province," +
+                    "student_permanent_address_region," +
+                    "student_permanent_address_zipcode," +
                     "student_birthplace_code," +
                     "student_birthplace_street," +
                     "student_birthplace_barangay," +
                     "student_birthplace_city," +
                     "student_birthplace_province," +
                     "student_birthplace_region," +
-                    "student_datemodified) " +
-                    "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                    "student_birthplace_zipcode," +
+                    "student_date_created," +
+                    "student_date_modified) " +
+                    "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"; //--ALTER!!! MULTIPLE COLUMNS ADDED TO TABLE-- ALTERRED!
             PreparedStatement preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setString(1, studentName.first_name);
             preparedStatement.setString(2, studentName.last_name);
@@ -170,9 +152,9 @@ public class StudentManager {
             preparedStatement.setBoolean(6, sex);
             preparedStatement.setString(7, motherTongue);
             preparedStatement.setString(8, birthCertificateNumber);
-            preparedStatement.setInt(9, lrn);
+            preparedStatement.setString(9, lrn);
             preparedStatement.setString(10, indigenousPeople);
-            preparedStatement.setInt(11, fourPs);
+            preparedStatement.setString(11, fourPs);
             preparedStatement.setString(12, disability);
             preparedStatement.setString(13, fatherName.first_name);
             preparedStatement.setString(14, fatherName.last_name);
@@ -186,20 +168,29 @@ public class StudentManager {
             preparedStatement.setString(22, guardianName.last_name);
             preparedStatement.setString(23, guardianName.middle_name);
             preparedStatement.setString(24, guardianName.extension_name);
-            preparedStatement.setTimestamp(25, now);
-            preparedStatement.setString(26, address.barangay_code);
-            preparedStatement.setString(27, address.street);
-            preparedStatement.setString(28, address.barangay);
-            preparedStatement.setString(29, address.city);
-            preparedStatement.setString(30, address.province);
-            preparedStatement.setString(31, address.region);
-            preparedStatement.setString(32, birthplace.barangay_code);
-            preparedStatement.setString(33, birthplace.street);
-            preparedStatement.setString(34, birthplace.barangay);
-            preparedStatement.setString(35, birthplace.city);
-            preparedStatement.setString(36, birthplace.province);
-            preparedStatement.setString(37, birthplace.region);
-            preparedStatement.setTimestamp(38, now);
+            preparedStatement.setString(25, address.barangay_code);
+            preparedStatement.setString(26, address.street);
+            preparedStatement.setString(27, address.barangay);
+            preparedStatement.setString(28, address.city);
+            preparedStatement.setString(29, address.province);
+            preparedStatement.setString(30, address.region);
+            preparedStatement.setString(31, address.zipcode);
+            preparedStatement.setString(32, permanentAddress.barangay_code);
+            preparedStatement.setString(33, permanentAddress.street);
+            preparedStatement.setString(34, permanentAddress.barangay);
+            preparedStatement.setString(35, permanentAddress.city);
+            preparedStatement.setString(36, permanentAddress.province);
+            preparedStatement.setString(37, permanentAddress.region);
+            preparedStatement.setString(38, permanentAddress.zipcode);
+            preparedStatement.setString(39, birthplace.barangay_code);
+            preparedStatement.setString(40, birthplace.street);
+            preparedStatement.setString(41, birthplace.barangay);
+            preparedStatement.setString(42, birthplace.city);
+            preparedStatement.setString(43, birthplace.province);
+            preparedStatement.setString(44, birthplace.region);
+            preparedStatement.setString(45, birthplace.zipcode);
+            preparedStatement.setTimestamp(46, now);
+            preparedStatement.setTimestamp(47, now);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -220,7 +211,7 @@ public class StudentManager {
                 .setMotherName(motherName)
                 .setGuardianName(guardianName)
                 .setDateCreated(now)
-                .setAddress(address)
+                .setCurrentAddress(address)
                 .setBirthplace(birthplace)
                 .setDateModified(now)
                 .build();
@@ -248,9 +239,9 @@ public class StudentManager {
                         .setSex(resultSet.getBoolean("student_sex"))
                         .setMotherTongue(resultSet.getString("student_mother_tongue"))
                         .setBirthCertificateNumber(resultSet.getString("student_birth_certificate_number"))
-                        .setLRN(resultSet.getInt("student_lrn"))
+                        .setLRN(resultSet.getString("student_lrn"))
                         .setIP(resultSet.getString("student_indigenous_people"))
-                        .set4Ps(resultSet.getInt("student_4ps"))
+                        .set4Ps(resultSet.getString("student_4ps"))
                         .setDisability(resultSet.getString("student_disability"))
                         .setFatherName(new Name(
                                 resultSet.getString("student_father_first_name"),
@@ -270,14 +261,23 @@ public class StudentManager {
                                 resultSet.getString("student_guardian_middle_name"),
                                 resultSet.getString("student_guardian_extension_name")
                         ))
-                        .setDateCreated(resultSet.getTimestamp("student_dateCreated"))
-                        .setAddress(new Address(
-                                resultSet.getString("student_address_code"),
-                                resultSet.getString("student_address_region"),
-                                resultSet.getString("student_address_province"),
-                                resultSet.getString("student_address_city"),
-                                resultSet.getString("student_address_barangay"),
-                                resultSet.getString("student_address_street")
+                        .setCurrentAddress(new Address(
+                                resultSet.getString("student_current_address_code"),
+                                resultSet.getString("student_current_address_region"),
+                                resultSet.getString("student_current_address_province"),
+                                resultSet.getString("student_current_address_city"),
+                                resultSet.getString("student_current_address_barangay"),
+                                resultSet.getString("student_current_address_street"),
+                                resultSet.getString("student_current_address_zipcode")
+                        ))
+                        .setPermanentAddress(new Address(
+                                resultSet.getString("student_permanent_address_code"),
+                                resultSet.getString("student_permanent_address_region"),
+                                resultSet.getString("student_permanent_address_province"),
+                                resultSet.getString("student_permanent_address_city"),
+                                resultSet.getString("student_permanent_address_barangay"),
+                                resultSet.getString("student_permanent_address_street"),
+                                resultSet.getString("student_permanent_address_zipcode")
                         ))
                         .setBirthplace(new Address(
                                 resultSet.getString("student_birthplace_code"),
@@ -285,9 +285,11 @@ public class StudentManager {
                                 resultSet.getString("student_birthplace_province"),
                                 resultSet.getString("student_birthplace_city"),
                                 resultSet.getString("student_birthplace_barangay"),
-                                resultSet.getString("student_birthplace_street")
+                                resultSet.getString("student_birthplace_street"),
+                                resultSet.getString("student_birthplace_zipcode")
                         ))
-                        .setDateModified(resultSet.getTimestamp("student_datemodified"))
+                        .setDateCreated(resultSet.getTimestamp("student_date_created"))
+                        .setDateModified(resultSet.getTimestamp("student_date_modified"))
                         .build();
                 studentList.add(newStudent);
             }
@@ -296,7 +298,7 @@ public class StudentManager {
             return;
         }
 
-        this.studentList = studentList;
+        StudentManager.studentList = studentList;
     }
 
     public Student showStudents(Connection conn) {
@@ -381,8 +383,8 @@ public class StudentManager {
                     changed = true;
                     break;
                 case 9:
-                    System.out.println("Enter new Learner's Reference Number.");
-                    int newLRN = get_inputInt();
+                    System.out.println("Enter new Learner's Reference Number: ");
+                    String newLRN = scanner.nextLine();
                     dummyStudent.set_LRN(newLRN);
                     changed = true;
                     break;
@@ -393,8 +395,8 @@ public class StudentManager {
                     changed = true;
                     break;
                 case 11:
-                    System.out.println("Enter new 4Ps Household Number.");
-                    int new4ps = get_inputInt();
+                    System.out.println("Enter new 4Ps Household Number: ");
+                    String new4ps = scanner.nextLine();
                     dummyStudent.set_4ps(new4ps);
                     changed = true;
                     break;
@@ -477,12 +479,18 @@ public class StudentManager {
                     changed = true;
                     break;
                 case 25:
-                    System.out.println("Enter Address.");
+                    System.out.println("Enter Current Address.");
                     Address address = addressManager.createAddress();
-                    dummyStudent.set_address(address);
+                    dummyStudent.set_current_address(address);
                     changed = true;
                     break;
                 case 26:
+                    System.out.println("Enter Permanent Address.");
+                    Address permanentAddress = addressManager.createAddress();
+                    dummyStudent.set_permanent_address(permanentAddress);
+                    changed = true;
+                    break;
+                case 27:
                     System.out.println("Enter Birthplace.");
                     Address birthplace = addressManager.createAddress();
                     dummyStudent.set_birthplace(birthplace);
@@ -523,12 +531,18 @@ public class StudentManager {
                     "student_guardian_last_name = ?, " +
                     "student_guardian_middle_name = ?, " +
                     "student_guardian_extension_name = ?, " +
-                    "student_address_code = ?, " +
-                    "student_address_street = ?, " +
-                    "student_address_barangay = ?, " +
-                    "student_address_city = ?, " +
-                    "student_address_province = ?, " +
-                    "student_address_region = ?, " +
+                    "student_current_address_code = ?, " +
+                    "student_current_address_street = ?, " +
+                    "student_current_address_barangay = ?, " +
+                    "student_current_address_city = ?, " +
+                    "student_current_address_province = ?, " +
+                    "student_current_address_region = ?, " +
+                    "student_permanent_address_code = ?, " +
+                    "student_permanent_address_street = ?, " +
+                    "student_permanent_address_barangay = ?, " +
+                    "student_permanent_address_city = ?, " +
+                    "student_permanent_address_province = ?, " +
+                    "student_permanent_address_region = ?, " +
                     "student_birthplace_code = ?, " +
                     "student_birthplace_street = ?, " +
                     "student_birthplace_barangay = ?, " +
@@ -546,9 +560,9 @@ public class StudentManager {
             preparedStatement.setBoolean(6, student.get_sex());
             preparedStatement.setString(7, student.get_mother_tongue());
             preparedStatement.setString(8, student.get_birth_certificate_number());
-            preparedStatement.setInt(9, student.get_lrn());
+            preparedStatement.setString(9, student.get_lrn());
             preparedStatement.setString(10, student.get_indigenous_people());
-            preparedStatement.setInt(11, student.get_4ps());
+            preparedStatement.setString(11, student.get_4ps());
             preparedStatement.setString(12, student.get_disability());
             preparedStatement.setString(13, student.get_father_first_name());
             preparedStatement.setString(14, student.get_father_last_name());
@@ -562,12 +576,18 @@ public class StudentManager {
             preparedStatement.setString(22, student.get_guardian_last_name());
             preparedStatement.setString(23, student.get_guardian_middle_name());
             preparedStatement.setString(24, student.get_guardian_extension_name());
-            preparedStatement.setString(25, student.get_address_code());
-            preparedStatement.setString(26, student.get_address_street());
-            preparedStatement.setString(27, student.get_address_barangay());
-            preparedStatement.setString(28, student.get_address_city());
-            preparedStatement.setString(29, student.get_address_province());
-            preparedStatement.setString(30, student.get_address_region());
+            preparedStatement.setString(25, student.get_current_address_code());
+            preparedStatement.setString(26, student.get_current_address_street());
+            preparedStatement.setString(27, student.get_current_address_barangay());
+            preparedStatement.setString(28, student.get_current_address_city());
+            preparedStatement.setString(29, student.get_current_address_province());
+            preparedStatement.setString(30, student.get_current_address_region());
+            preparedStatement.setString(25, student.get_permanent_address_code());
+            preparedStatement.setString(26, student.get_permanent_address_street());
+            preparedStatement.setString(27, student.get_permanent_address_barangay());
+            preparedStatement.setString(28, student.get_permanent_address_city());
+            preparedStatement.setString(29, student.get_permanent_address_province());
+            preparedStatement.setString(30, student.get_permanent_address_region());
             preparedStatement.setString(31, student.get_birthplace_code());
             preparedStatement.setString(32, student.get_birthplace_street());
             preparedStatement.setString(33, student.get_birthplace_barangay());

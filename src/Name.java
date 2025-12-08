@@ -1,3 +1,5 @@
+import java.util.Scanner;
+
 public class Name {
     public String first_name;
     public String last_name;
@@ -21,5 +23,17 @@ public class Name {
     }
     public String get_full_name() {
         return String.format("%s %s %s", first_name, middle_name, last_name) + (extension_name.isEmpty() ? "" : " " + extension_name);
+    }
+    
+    public static Name createName(Scanner scanner, String description) {
+        System.out.printf("Enter %sFirst Name: ", (description == null || description.isEmpty()) ? " " : description + " ");
+        String firstName = scanner.nextLine();
+        System.out.printf("Enter %sLast Name: ", (description == null || description.isEmpty()) ? " " : description + " ");
+        String lastName = scanner.nextLine();
+        System.out.printf("Enter %sMiddle Name (leave blank if not applicable): ", (description == null || description.isEmpty()) ? " " : description + " ");
+        String middleName = scanner.nextLine();
+        System.out.printf("Enter %sName Extension (e.g. Jr., Sr. II, III, etc.; leave blank if not applicable).%n> ", (description == null || description.isEmpty()) ? " " : description + " ");
+        String nameExtension = scanner.nextLine();
+        return new Name(firstName, lastName, middleName, nameExtension);
     }
 }

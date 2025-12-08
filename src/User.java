@@ -4,7 +4,6 @@ import java.sql.Timestamp;
 public class User {
     private int user_id;
     private Name user_name;
-    private Date user_birthdate;
     private Timestamp user_dateCreated;
 
     public User(int user_id,
@@ -12,11 +11,9 @@ public class User {
                 String user_last_name,
                 String user_middle_name,
                 String user_extension_name,
-                Date user_birthdate,
                 Timestamp user_dateCreated) {
         this.user_id = user_id;
         this.user_name = new Name(user_first_name, user_last_name, user_middle_name, user_extension_name);
-        this.user_birthdate = user_birthdate;
         this.user_dateCreated = user_dateCreated;
     }
 
@@ -30,6 +27,5 @@ public class User {
     public String get_fml_name() {return user_name.get_fml_name();}
     public String get_full_name() {return user_name.get_full_name();}
 
-    public String getUser_birthdate() {return user_birthdate.toString();}
     public String getUser_dateCreated() {return user_dateCreated.toString();}
 }

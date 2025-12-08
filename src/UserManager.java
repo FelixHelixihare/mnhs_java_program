@@ -25,25 +25,7 @@ public class UserManager {
     }
 
     public void register(Connection conn) {
-        System.out.print("Enter First Name: ");
-        String firstName = scanner.nextLine();
-        System.out.print("Enter Last Name: ");
-        String lastName = scanner.nextLine();
-        System.out.print("Enter Middle Name (leave blank if not applicable): ");
-        String middleName = scanner.nextLine();
-        System.out.print("Enter Name Extension (e.g. Jr., Sr. II, III, etc.; leave blank if not applicable).\n> ");
-        String extensionName = scanner.nextLine();
-
-        System.out.print("Enter Birthdate (YYYY-MM-DD): ");
-        Date birthdate;
-        while (true) {
-            try {
-                birthdate = Date.valueOf(scanner.nextLine());
-                break;
-            } catch (IllegalArgumentException e) {
-                System.out.print("That is not a proper date. Please try again: ");
-            }
-        }
+        Name name = Name.createName(scanner, "");
         System.out.print("Enter username: ");
         String username;
         while (true) {
@@ -72,25 +54,20 @@ public class UserManager {
                     "user_last_name," +
                     "user_middle_name," +
                     "user_extension_name," +
-                    "user_birthdate," +
-                    "user_dateCreated," +
+                    "user_date_created," +
                     "user_username)" +
-                    "VALUES(?,?,?,?,?,?,?)";
+                    "VALUES(?,?,?,?,?,?)" +
+                    "RETURNING user_id";
             PreparedStatement preparedStatement = conn.prepareStatement(sql);
-            preparedStatement.setString(1, firstName);
-            preparedStatement.setString(2, lastName);
-            preparedStatement.setString(3, middleName);
-            preparedStatement.setString(4, extensionName);
-            preparedStatement.setDate(5, birthdate);
-            preparedStatement.setTimestamp(6, timestamp);
-            preparedStatement.setString(7, username);
-            preparedStatement.executeUpdate();
-
-            sql = "SELECT (user_id) FROM user WHERE user_username=?";
-            preparedStatement = conn.prepareStatement(sql);
-            preparedStatement.setString(1, username);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            resultSet.next();
+            preparedStatement.setString(1, name.first_name);
+            preparedStatement.setString(2, name.last_name);
+            preparedStatement.setString(3, name.middle_name);
+            preparedStatement.setString(4, name.extension_name);
+            preparedStatement.setTimestamp(5, timestamp);
+            preparedStatement.setString(6, username);
+            ResultSet test = preparedStatement.executeQuery();
+            int autoincrement_id = test.getInt("user_id");
+            test.close();
 
             byte[] salt = new byte[16];
             random.nextBytes(salt);
@@ -99,7 +76,7 @@ public class UserManager {
 
             sql = "INSERT INTO password(user_id, user_password, password_salt) VALUES(?,?,?);";
             preparedStatement = conn.prepareStatement(sql);
-            preparedStatement.setInt(1, resultSet.getInt("user_id"));
+            preparedStatement.setInt(1, autoincrement_id);
             preparedStatement.setBytes(2, hashedPassword);
             preparedStatement.setBytes(3, salt);
             preparedStatement.executeUpdate();
@@ -140,8 +117,7 @@ public class UserManager {
                     "user_last_name, " +
                     "user_middle_name, " +
                     "user_extension_name, " +
-                    "user_birthdate, " +
-                    "user_dateCreated " +
+                    "user_date_created " +
                     "FROM user WHERE user_username=?;";
             PreparedStatement preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setString(1, username);
@@ -166,8 +142,7 @@ public class UserManager {
                         userResultSet.getString("user_last_name"),
                         userResultSet.getString("user_middle_name"),
                         userResultSet.getString("user_extension_name"),
-                        userResultSet.getDate("user_birthdate"),
-                        userResultSet.getTimestamp("user_dateCreated")
+                        userResultSet.getTimestamp("user_date_created")
                 );
                 System.out.println("Login success! Welcome " + currentUser.get_fml_name() + "!");
             } else {
@@ -175,8 +150,7 @@ public class UserManager {
             }
 
         } catch (SQLException e) {
-            //System.err.println(e.getMessage());
-            e.printStackTrace();
+            System.err.println(e.getMessage());
             return false;
         }
         return true;
