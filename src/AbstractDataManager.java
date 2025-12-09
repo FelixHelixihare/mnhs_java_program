@@ -1,3 +1,4 @@
+import java.sql.Date;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
@@ -38,5 +39,18 @@ public abstract class AbstractDataManager {
             break;
         }
         return input;
+    }
+
+    Date get_inputDate() {
+        Date date;
+        while (true) {
+            try {
+                date = Date.valueOf(scanner.nextLine());
+                break;
+            } catch (IllegalArgumentException e) {
+                System.out.print("That is not a proper date. Please try again: ");
+            }
+        }
+        return date;
     }
 }

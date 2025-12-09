@@ -206,6 +206,14 @@ public class Student {
             this.student_date_modified = dateModified;
             return this;
         }
+        public Builder setStrand(Strand strand) {
+            this.student_strand = strand;
+            return this;
+        }
+        public Builder setSection(Section section) {
+            this.student_section = section;
+            return this;
+        }
         public Student build() {
             return new Student(this);
         }
@@ -222,8 +230,11 @@ public class Student {
     public String get_full_name() {return student_name.get_full_name();}
 
     public String get_birthdate_asString() {return student_birthdate.toString();}
-    public String get_dateCreated_asString() {return student_date_created.toString();}
+    public String get_date_created_asString() {return student_date_created.toString();}
+    public String get_date_modified_asString() {return student_date_modified.toString();}
 
+    public Timestamp get_date_created() {return student_date_created;}
+    public Timestamp get_date_modified() {return student_date_modified;}
     public Date get_birthdate() {return student_birthdate;}
     public boolean get_sex() {return student_sex;}
     public String get_mother_tongue() {return student_mother_tongue;}
@@ -284,6 +295,9 @@ public class Student {
     public String get_birthplace_province() {return student_birthplace.province;}
     public String get_birthplace_region() {return student_birthplace.region;}
 
+    public Strand get_strand() {return student_strand;}
+    public Section get_section() {return student_section;}
+
     public void set_first_name(String firstName) {student_name.first_name = firstName;}
     public void set_last_name(String lastName) {student_name.last_name = lastName;}
     public void set_middle_name(String middleName) {student_name.middle_name = middleName;}
@@ -315,6 +329,10 @@ public class Student {
     public void set_current_address(Address address) {student_current_address = address;}
     public void set_permanent_address(Address address) {student_permanent_address = address;}
     public void set_birthplace(Address birthplace) {student_birthplace = birthplace;}
+
+    public void set_date_modified(Timestamp dateModified) {student_date_modified = dateModified;}
+    public void set_section(Section section) {student_section = section;}
+    public void set_strand(Strand strand) {student_strand = strand;}
 
     public void showValues() {
         System.out.println("(1) First Name: " + student_name.first_name);

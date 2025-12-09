@@ -4,27 +4,19 @@ import java.util.*;
 
 public class StudentManager extends AbstractDataManager {
     private final AddressManager addressManager;
+    private final GeneralDataManager generalDataManager;
     private static List<Student> studentList;
 
-    public StudentManager(Scanner scanner) {
+    public StudentManager(Scanner scanner, GeneralDataManager generalDataManager) {
         super(scanner);
         this.addressManager = new AddressManager(scanner);
+        this.generalDataManager = generalDataManager;
     }
 
     public void insertStudent(Connection conn) {
         Name studentName = Name.createName(scanner, "");
-
         System.out.print("Enter Birthdate (YYYY-MM-DD): ");
-        Date birthdate;
-        while (true) {
-            try {
-                birthdate = Date.valueOf(scanner.nextLine());
-                break;
-            } catch (IllegalArgumentException e) {
-                System.out.print("That is not a proper date. Please try again: ");
-            }
-        }
-
+        Date birthdate = get_inputDate();
         System.out.print("Enter Sex (M/F): ");
         boolean sex = get_booleanChoice(femaleWords, maleWords); //false = male; true = female
 
@@ -57,6 +49,10 @@ public class StudentManager extends AbstractDataManager {
         }
         System.out.println("Enter Birthplace.");
         Address birthplace = addressManager.createShortAddress();
+
+        Strand strand = generalDataManager.selectStrand();
+        Section section = generalDataManager.selectSection();
+
         Timestamp now = new Timestamp(System.currentTimeMillis());
         int student_id = Integer.MIN_VALUE;
 
@@ -108,7 +104,9 @@ public class StudentManager extends AbstractDataManager {
                     "student_birthplace_region," +
                     "student_birthplace_zipcode," +
                     "student_date_created," +
-                    "student_date_modified) " +
+                    "student_date_modified," +
+                    "student_strand," +
+                    "student_section) " +
                     "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) " + //--ALTER!!! MULTIPLE COLUMNS ADDED TO TABLE-- ALTERRED!
                     "RETURNING student_id";
             PreparedStatement preparedStatement = conn.prepareStatement(sql);
@@ -159,6 +157,8 @@ public class StudentManager extends AbstractDataManager {
             preparedStatement.setString(45, birthplace.zipcode);
             preparedStatement.setTimestamp(46, now);
             preparedStatement.setTimestamp(47, now);
+            preparedStatement.setInt(48, strand.get_id());
+            preparedStatement.setInt(49, section.get_id());
             ResultSet resultSet = preparedStatement.executeQuery();
             student_id = resultSet.getInt(resultSet.getInt("student_id"));
         } catch (SQLException e) {
@@ -197,6 +197,11 @@ public class StudentManager extends AbstractDataManager {
             ResultSet resultSet = statement.executeQuery(sql);
 
             while (resultSet.next()) {
+                int strand = resultSet.getInt("student_strand");
+                boolean strand_null = resultSet.wasNull();
+                int section = resultSet.getInt("student_section");
+                boolean section_null = resultSet.wasNull();
+
                 Student newStudent = Student.Builder.newInstance()
                         .setId(resultSet.getInt("student_id"))
                         .setName(new Name(
@@ -260,18 +265,19 @@ public class StudentManager extends AbstractDataManager {
                         ))
                         .setDateCreated(resultSet.getTimestamp("student_date_created"))
                         .setDateModified(resultSet.getTimestamp("student_date_modified"))
+                        .setStrand(strand_null ? null : generalDataManager.findStrand(strand))
+                        .setSection(section_null ? null : generalDataManager.findSection(section))
                         .build();
                 studentList.add(newStudent);
             }
         } catch (SQLException e) {
-            System.err.println(e.getMessage());
-            return;
+            throw new RuntimeException(e);
         }
 
         StudentManager.studentList = studentList;
     }
 
-    public Student selectStudent(Connection conn) {
+    public Student selectStudent() {
         for (int i = 0; i < studentList.size(); i++) {
             Student s = studentList.get(i);
             System.out.printf("(%s) %s%n", i+1, s.get_fml_name());
@@ -289,7 +295,7 @@ public class StudentManager extends AbstractDataManager {
         }
     }
 
-    public void changeValue(Connection conn, Student student) {
+    public void updateStudent(Connection conn, Student student) {
         boolean changed = false;
         Student dummyStudent = new Student(student);
         loop: while (true) {
@@ -322,15 +328,7 @@ public class StudentManager extends AbstractDataManager {
                     break;
                 case 5:
                     System.out.print("Enter new Birthdate (YYYY-MM-DD): ");
-                    Date birthdate;
-                    while (true) {
-                        try {
-                            birthdate = Date.valueOf(scanner.nextLine());
-                            break;
-                        } catch (IllegalArgumentException e) {
-                            System.out.print("That is not a proper date. Please try again: ");
-                        }
-                    }
+                    Date birthdate = get_inputDate();
                     dummyStudent.set_birthdate(birthdate);
                     changed = true;
                     break;
@@ -474,7 +472,9 @@ public class StudentManager extends AbstractDataManager {
         }
 
         if (!changed) return;
+        Timestamp now = new Timestamp(System.currentTimeMillis());
         student.copy(dummyStudent);
+        student.set_date_modified(now);
         try {
             String sql = "UPDATE student SET " +
                     "student_first_name = ?, " +
@@ -519,7 +519,7 @@ public class StudentManager extends AbstractDataManager {
                     "student_birthplace_city = ?, " +
                     "student_birthplace_province = ?, " +
                     "student_birthplace_region = ?, " +
-                    "student_datemodified = ? " +
+                    "student_date_modified = ? " +
                     "WHERE student_id = ?";
             PreparedStatement preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setString(1, student.get_first_name());
@@ -564,7 +564,7 @@ public class StudentManager extends AbstractDataManager {
             preparedStatement.setString(34, student.get_birthplace_city());
             preparedStatement.setString(35, student.get_birthplace_province());
             preparedStatement.setString(36, student.get_birthplace_region());
-            preparedStatement.setTimestamp(37, new Timestamp(System.currentTimeMillis()));
+            preparedStatement.setTimestamp(37, now);
             preparedStatement.setInt(38, student.get_id());
             preparedStatement.executeUpdate();
         } catch(SQLException e) {
@@ -588,5 +588,17 @@ public class StudentManager extends AbstractDataManager {
 
         System.out.printf("Successfully deleted %s.%n", student.get_fml_name());
         studentList.remove(student);
+    }
+
+    public void onSectionDelete(Section section) {
+        for (Student i : studentList) {
+            if (i.get_section().equals(section)) i.set_section(null);
+        }
+    }
+
+    public void onStrandDelete(Strand strand) {
+        for (Student i : studentList) {
+            if (i.get_strand().equals(strand)) i.set_strand(null);
+        }
     }
 }

@@ -9,8 +9,9 @@ public class Main {
     private static final String url = "jdbc:sqlite:db/my.db";
     private static final Scanner scanner = new Scanner(System.in);
     private static final UserManager userManager;
-    private static final AddressManager addressManager = new AddressManager(scanner);
-    private static final StudentManager studentManager = new StudentManager(scanner);
+    //private static final AddressManager addressManager = new AddressManager(scanner);
+    private static final GeneralDataManager generalDataManager = new GeneralDataManager(scanner);
+    private static final StudentManager studentManager = new StudentManager(scanner, generalDataManager);
 
     static {
         try {
@@ -23,6 +24,7 @@ public class Main {
     public static void main(String[] args) {
         if (!connect()) return;
         studentManager.loadStudents(conn);
+        generalDataManager.loadData(conn);
 
         displayLoggedOutChoices();
         loop: while (true) {
@@ -30,14 +32,14 @@ public class Main {
 
             if (userManager.getCurrentUser() == null) {
                 switch (input) {
-                    case 0:
+                    case 0: //Exit program
                         System.out.println("Goodbye!");
                         break loop;
-                    case 1:
+                    case 1: //Register new user
                         userManager.register(conn);
                         displayLoggedOutChoices();
                         break;
-                    case 2:
+                    case 2: //Login
                         if (userManager.login(conn)) displayLoggedInChoices();
                         else displayLoggedOutChoices();
                         break;
@@ -46,27 +48,72 @@ public class Main {
                 }
             } else {
                 Student s;
+                Strand st;
+                Section sc;
+                Teacher t;
                 switch (input) {
-                    case -1:
+                    case -1: //Exit program
                         System.out.println("Goodbye!");
                         break loop;
-                    case 0:
+                    case 0: //Logout
                         System.out.println("Until next time, " + userManager.getCurrentUser().get_first_name() + "!");
                         userManager.logout();
                         displayLoggedOutChoices();
                         break;
-                    case 1:
+                    case 1: //Insert new student
                         studentManager.insertStudent(conn);
                         displayLoggedInChoices();
                         break;
-                    case 2:
-                        s = studentManager.selectStudent(conn);
-                        if (s != null) studentManager.changeValue(conn, s);
+                    case 2: //Update/View student
+                        s = studentManager.selectStudent();
+                        if (s != null) studentManager.updateStudent(conn, s);
                         displayLoggedInChoices();
                         break;
-                    case 3:
-                        s = studentManager.selectStudent(conn);
+                    case 3: //Delete student
+                        s = studentManager.selectStudent();
                         if (s != null) studentManager.deleteStudent(conn, s);
+                        displayLoggedInChoices();
+                        break;
+                    case 4: //Insert new teacher
+                        generalDataManager.insertTeacher(conn);
+                        displayLoggedInChoices();
+                        break;
+                    case 5: //Update teacher
+                        t = generalDataManager.selectTeacher();
+                        if (t != null) generalDataManager.updateTeacher(conn, t);
+                        displayLoggedInChoices();
+                        break;
+                    case 6: //Delete teacher
+                        t = generalDataManager.selectTeacher();
+                        if (t != null) generalDataManager.deleteTeacher(conn, t);
+                        displayLoggedInChoices();
+                        break;
+                    case 7: //Insert strand
+                        generalDataManager.insertStrand(conn);
+                        displayLoggedInChoices();
+                        break;
+                    case 8: //Update strand
+                        st = generalDataManager.selectStrand();
+                        if (st != null) generalDataManager.updateStrand(conn, st);
+                        displayLoggedInChoices();
+                        break;
+                    case 9: //Delete strand
+                        st = generalDataManager.selectStrand();
+                        if (st != null) generalDataManager.deleteStrand(conn, st, studentManager);
+                        displayLoggedInChoices();
+                        break;
+                    case 10: //Insert section
+                        generalDataManager.insertSection(conn);
+                        displayLoggedInChoices();
+                        break;
+                    case 11: //Update section
+                        sc = generalDataManager.selectSection();
+                        if (sc != null) generalDataManager.updateSection(conn, sc);
+                        displayLoggedInChoices();
+                        break;
+                    case 12:
+                        sc = generalDataManager.selectSection();
+                        if (sc != null) generalDataManager.deleteSection(conn, sc, studentManager);
                         displayLoggedInChoices();
                         break;
                     default:

@@ -98,6 +98,13 @@ public class GeneralDataManager extends AbstractDataManager {
         return null;
     }
 
+    public Section findSection(int section_id) {
+        for (Section i : sectionList) {
+            if (i.get_id() == section_id) return i;
+        }
+        return null;
+    }
+
     public void insertStrand(Connection conn) {
         System.out.print("Enter Strand: ");
         String strand_strand = scanner.nextLine();
@@ -130,6 +137,79 @@ public class GeneralDataManager extends AbstractDataManager {
         } catch (SQLException e) {
             System.err.println(e.getMessage());
         }
+    }
+
+    public void updateStrand(Connection conn, Strand strand) {
+        boolean changed = false;
+        Strand dummyStrand = new Strand(strand);
+        loop: while (true) {
+            dummyStrand.showValues();
+            int input = get_inputInt();
+            switch (input) {
+                case 1:
+                    System.out.print("Enter new strand name: ");
+                    String newStrandName = scanner.nextLine();
+                    dummyStrand.set_strand(newStrandName);
+                    changed = true;
+                    break;
+                case 2:
+                    System.out.print("Enter new track: ");
+                    String newTrack = scanner.nextLine();
+                    dummyStrand.set_strand(newTrack);
+                    changed = true;
+                    break;
+                case 3:
+                    System.out.print("Enter new description: ");
+                    String newDescription = scanner.nextLine();
+                    dummyStrand.set_description(newDescription);
+                    changed = true;
+                    break;
+                case 0:
+                    break loop;
+                default:
+                    System.out.println("That does not correspond to any known choice.");
+            }
+        }
+
+        if (changed) return;
+        strand.copy(dummyStrand);
+        try {
+            String sql = "UPDATE strand SET " +
+                    "strand_strand = ?," +
+                    "strand_track = ?," +
+                    "strand_description = ? " +
+                    "WHERE strand_id = ?";
+            PreparedStatement preparedStatement = conn.prepareStatement(sql);
+            preparedStatement.setString(1, strand.get_strand());
+            preparedStatement.setString(2, strand.get_track());
+            preparedStatement.setString(3, strand.get_description());
+            preparedStatement.setInt(4, strand.get_id());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+    }
+
+    public void deleteStrand(Connection conn, Strand strand, StudentManager studentManager) {
+        System.out.printf("Do you really wish to delete %s, %s? (Y/N): ", strand.get_strand(), strand.get_description());
+        boolean confirm = get_booleanChoice(yesWords, noWords);
+        if (!confirm) return;
+
+        try {
+            String sql = "DELETE FROM strand WHERE strand_id=?";
+            PreparedStatement preparedStatement = conn.prepareStatement(sql);
+            preparedStatement.setInt(1, strand.get_id());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+
+        System.out.printf("Successfully deleted %s, %s.%n", strand.get_strand(), strand.get_description());
+        for (Section i : sectionList) {
+            if (i.get_strand().equals(strand)) i.set_strand(null);
+        }
+        studentManager.onStrandDelete(strand);
+        strandList.remove(strand);
     }
 
     public void insertTeacher(Connection conn) {
@@ -178,6 +258,106 @@ public class GeneralDataManager extends AbstractDataManager {
         }
     }
 
+    public void updateTeacher(Connection conn, Teacher teacher) {
+        boolean changed = false;
+        Teacher dummyTeacher = new Teacher(teacher);
+        loop: while (true) {
+            dummyTeacher.showValues();
+            int input = get_inputInt();
+            switch (input) {
+                case 1:
+                    System.out.print("Enter new First Name: ");
+                    String newFirstName = scanner.nextLine();
+                    dummyTeacher.set_first_name(newFirstName);
+                    changed = true;
+                    break;
+                case 2:
+                    System.out.print("Enter new Last Name: ");
+                    String newLastName = scanner.nextLine();
+                    dummyTeacher.set_last_name(newLastName);
+                    changed = true;
+                    break;
+                case 3:
+                    System.out.print("Enter new Middle Name: ");
+                    String newMiddleName = scanner.nextLine();
+                    dummyTeacher.set_middle_name(newMiddleName);
+                    changed = true;
+                    break;
+                case 4:
+                    System.out.print("Enter new Name Extension (e.g. Jr., Sr. II, III, etc.; leave blank if not applicable).\n> ");
+                    String newExtensionName = scanner.nextLine();
+                    dummyTeacher.set_extension_name(newExtensionName);
+                    changed = true;
+                    break;
+                case 5:
+                    System.out.print("Enter new Sex (M/F): ");
+                    boolean newSex = get_booleanChoice(femaleWords, maleWords);
+                    dummyTeacher.set_sex(newSex);
+                    changed = true;
+                    break;
+                case 6:
+                    System.out.print("Enter new marital status. Is " + dummyTeacher.get_last_name_with_title() + " married? (Y/N) ");
+                    boolean newMarried = get_booleanChoice(yesWords, noWords);
+                    dummyTeacher.set_married(newMarried);
+                    changed = true;
+                    break;
+                case 0:
+                    break loop;
+                default:
+                    System.out.println("That does not correspond to any known choice.");
+            }
+        }
+
+        if (!changed) return;
+        Timestamp now = new Timestamp(System.currentTimeMillis());
+        teacher.copy(dummyTeacher);
+        teacher.set_date_modified(now);
+        try {
+            String sql = "UPDATE teacher SET " +
+                    "teacher_first_name = ?, " +
+                    "teacher_last_name = ?," +
+                    "teacher_middle_name = ?," +
+                    "teacher_extension_name = ?," +
+                    "teacher_sex = ?," +
+                    "teacher_married = ?," +
+                    "teacher_date_modified = ?," +
+                    "WHERE teacher_id = ?";
+            PreparedStatement preparedStatement = conn.prepareStatement(sql);
+            preparedStatement.setString(1, teacher.get_first_name());
+            preparedStatement.setString(2, teacher.get_last_name());
+            preparedStatement.setString(3, teacher.get_middle_name());
+            preparedStatement.setString(4, teacher.get_extension_name());
+            preparedStatement.setBoolean(5, teacher.get_sex());
+            preparedStatement.setBoolean(6, teacher.get_married());
+            preparedStatement.setTimestamp(7, now);
+            preparedStatement.setInt(8, teacher.get_id());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+    }
+
+    public void deleteTeacher(Connection conn, Teacher teacher) {
+        System.out.printf("Do you really wish to delete %s? (Y/N): ", teacher.get_fml_name_with_title());
+        boolean confirm = get_booleanChoice(yesWords, noWords);
+        if (!confirm) return;
+
+        try {
+            String sql = "DELETE FROM teacher WHERE teacher_id=?";
+            PreparedStatement preparedStatement = conn.prepareStatement(sql);
+            preparedStatement.setInt(1, teacher.get_id());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+
+        System.out.printf("Successfully deleted %s.%n", teacher.get_fml_name_with_title());
+        for (Section i : sectionList) {
+            if (i.get_adviser().equals(teacher)) i.set_adviser(null);
+        }
+        teacherList.remove(teacher);
+    }
+
     public Strand selectStrand() {
         for (int i = 0; i < strandList.size(); i++) {
             Strand s = strandList.get(i);
@@ -210,6 +390,24 @@ public class GeneralDataManager extends AbstractDataManager {
                 return teacherList.get(input-1);
             } catch (IndexOutOfBoundsException e) {
                 System.out.println("That integer does not correspond to any teacher.");
+            }
+        }
+    }
+
+    public Section selectSection() {
+        for (int i = 0; i < sectionList.size(); i++) {
+            Section s = sectionList.get(i);
+            System.out.printf("(%s) Grade %s - %s%n", i+1, s.get_grade(), s.get_name());
+        }
+        System.out.println("(0) Back.");
+
+        while (true) {
+            int input = get_inputInt();
+            if (input == 0) return null;
+            try {
+                return sectionList.get(input-1);
+            } catch (IndexOutOfBoundsException e) {
+                System.out.println("That integer does not correspond to any section.");
             }
         }
     }
@@ -261,5 +459,84 @@ public class GeneralDataManager extends AbstractDataManager {
         } catch (SQLException e) {
             System.err.println(e.getMessage());
         }
+    }
+
+    public void updateSection(Connection conn, Section section) {
+        boolean changed = false;
+        Section dummySection = new Section(section);
+        loop: while (true) {
+            dummySection.showValues();
+            int input = get_inputInt();
+            switch (input) {
+                case 1:
+                    System.out.print("Enter new Section Name: ");
+                    String newName = scanner.nextLine();
+                    dummySection.set_name(newName);
+                    changed = true;
+                    break;
+                case 2:
+                    System.out.print("Enter new Grade Level: ");
+                    int newGrade = get_inputInt();
+                    dummySection.set_grade(newGrade);
+                    changed = true;
+                    break;
+                case 3:
+                    System.out.println("Select new Strand.");
+                    Strand newStrand = selectStrand();
+                    dummySection.set_strand(newStrand);
+                    changed = true;
+                    break;
+                case 4:
+                    System.out.println("Select new Adviser.");
+                    Teacher newTeacher = selectTeacher();
+                    dummySection.set_adviser(newTeacher);
+                    changed = true;
+                    break;
+                case 0:
+                    break loop;
+                default:
+                    System.out.println("That does not correspond to any known choice.");
+            }
+        }
+
+        if (!changed) return;
+        //Timestamp now = new Timestamp(System.currentTimeMillis());
+        section.copy(dummySection);
+        try {
+            String sql = "UPDATE section SET " +
+                    "section_name = ?," +
+                    "section_grade = ?," +
+                    "section_strand = ?," +
+                    "section_adviser = ? " +
+                    "WHERE section_id = ?";
+            PreparedStatement preparedStatement = conn.prepareStatement(sql);
+            preparedStatement.setString(1, section.get_name());
+            preparedStatement.setInt(2, section.get_grade());
+            preparedStatement.setInt(3, section.get_strand().get_id());
+            preparedStatement.setInt(4, section.get_adviser().get_id());
+            preparedStatement.setInt(5, section.get_id());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+    }
+
+    public void deleteSection(Connection conn, Section section, StudentManager studentManager) {
+        System.out.printf("Do you really wish to delete Grade %s - %s? (Y/N): ", section.get_grade(), section.get_name());
+        boolean confirm = get_booleanChoice(yesWords, noWords);
+        if (!confirm) return;
+
+        try {
+            String sql = "DELETE FROM section WHERE section_id=?";
+            PreparedStatement preparedStatement = conn.prepareStatement(sql);
+            preparedStatement.setInt(1, section.get_id());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+
+        System.out.printf("Successfully deleted Grade %s - %s.", section.get_grade(), section.get_name());
+        studentManager.onSectionDelete(section);
+        sectionList.remove(section);
     }
 }
