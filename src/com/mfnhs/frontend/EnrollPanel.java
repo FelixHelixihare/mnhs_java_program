@@ -252,7 +252,7 @@ public class EnrollPanel extends JPanel {
                         middleNameField.getText(),
                         extensionNameField.getText()
                 ))
-                //.setBirthdate(Date.valueOf(birthdateField.getText()))
+                .setBirthdate(null)
                 .setSex(!sexField.getText().toLowerCase().startsWith("m"))
                 .setMotherTongue(motherTongueField.getText())
                 .setBirthCertificateNumber(birthCertificateField.getText())

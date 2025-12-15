@@ -178,6 +178,7 @@ public class Main {
         try {
             conn = DriverManager.getConnection(url);
             System.out.println("Successful connection :)");
+
             return true;
         } catch (SQLException e) {
             System.err.println(e.getMessage());

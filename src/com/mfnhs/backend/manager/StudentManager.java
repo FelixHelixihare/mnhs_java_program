@@ -662,7 +662,7 @@ public class StudentManager extends AbstractDataManager {
                     "student_date_created," +
                     "student_date_modified) " +
                     "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) " + //--ALTER!!! MULTIPLE COLUMNS ADDED TO TABLE-- ALTERRED!
-                    "RETURNING student_id";
+                    "";
             PreparedStatement preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setString(1, studentName.first_name);
             preparedStatement.setString(2, studentName.last_name);
@@ -711,8 +711,9 @@ public class StudentManager extends AbstractDataManager {
             preparedStatement.setString(45, birthplace.zipcode);
             preparedStatement.setTimestamp(46, now);
             preparedStatement.setTimestamp(47, now);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            student.set_id(resultSet.getInt(resultSet.getInt("student_id")));
+            preparedStatement.executeUpdate();
+            //student.set_id(conn.last);
+            System.out.println(student.get_id());
         } catch (SQLException e) {
             //e.printStackTrace();
             System.err.println(e.getMessage());
