@@ -1,3 +1,14 @@
+package com.mfnhs;
+
+import com.mfnhs.backend.data.Section;
+import com.mfnhs.backend.data.Strand;
+import com.mfnhs.backend.data.Student;
+import com.mfnhs.backend.data.Teacher;
+import com.mfnhs.backend.manager.GeneralDataManager;
+import com.mfnhs.backend.manager.StudentManager;
+import com.mfnhs.backend.manager.UserManager;
+import com.mfnhs.frontend.App;
+
 import java.security.NoSuchAlgorithmException;
 import java.sql.*;
 import java.util.Scanner;
@@ -9,7 +20,7 @@ public class Main {
     private static final String url = "jdbc:sqlite:db/my.db";
     private static final Scanner scanner = new Scanner(System.in);
     private static final UserManager userManager;
-    //private static final AddressManager addressManager = new AddressManager(scanner);
+    //private static final com.mfnhs.backend.manager.AddressManager addressManager = new com.mfnhs.backend.manager.AddressManager(scanner);
     private static final GeneralDataManager generalDataManager = new GeneralDataManager(scanner);
     private static final StudentManager studentManager = new StudentManager(scanner, generalDataManager);
 
@@ -23,8 +34,19 @@ public class Main {
 
     public static void main(String[] args) {
         if (!connect()) return;
-        studentManager.loadStudents(conn);
-        generalDataManager.loadData(conn);
+
+        try {
+            studentManager.loadStudents(conn);
+            generalDataManager.loadData(conn);
+        } catch (Exception e) {
+            System.err.println("Encountered error in loading data.");
+            return;
+        }
+
+        App.main(args);
+    }
+
+    public static void terminalInput() {
 
         displayLoggedOutChoices();
         loop: while (true) {
@@ -61,17 +83,17 @@ public class Main {
                         displayLoggedOutChoices();
                         break;
                     case 1: //Insert new student
-                        studentManager.insertStudent(conn);
+                        studentManager.terminalCreateStudent(conn);
                         displayLoggedInChoices();
                         break;
                     case 2: //Update/View student
-                        s = studentManager.selectStudent();
-                        if (s != null) studentManager.updateStudent(conn, s);
+                        s = studentManager.terminalSelectStudent();
+                        if (s != null) studentManager.terminalStudentUpdate(conn, s);
                         displayLoggedInChoices();
                         break;
                     case 3: //Delete student
-                        s = studentManager.selectStudent();
-                        if (s != null) studentManager.deleteStudent(conn, s);
+                        s = studentManager.terminalSelectStudent();
+                        if (s != null) studentManager.terminalDeleteStudent(conn, s);
                         displayLoggedInChoices();
                         break;
                     case 4: //Insert new teacher
@@ -161,5 +183,9 @@ public class Main {
             System.err.println(e.getMessage());
             return false;
         }
+    }
+
+    public static void createStudent(Student student) throws SQLException {
+        studentManager.createStudent(student, conn);
     }
 }

@@ -1,3 +1,5 @@
+package com.mfnhs.backend.data;
+
 import java.util.Scanner;
 
 public class Name {
@@ -26,11 +28,11 @@ public class Name {
     }
     
     public static Name createName(Scanner scanner, String description) {
-        System.out.printf("Enter %sFirst Name: ", (description == null || description.isEmpty()) ? "" : description + " ");
+        System.out.printf("Enter %sFirst com.mfnhs.backend.data.Name: ", (description == null || description.isEmpty()) ? "" : description + " ");
         String firstName = scanner.nextLine();
-        System.out.printf("Enter %sLast Name: ", (description == null || description.isEmpty()) ? "" : description + " ");
+        System.out.printf("Enter %sLast com.mfnhs.backend.data.Name: ", (description == null || description.isEmpty()) ? "" : description + " ");
         String lastName = scanner.nextLine();
-        System.out.printf("Enter %sMiddle Name (leave blank if not applicable): ", (description == null || description.isEmpty()) ? "" : description + " ");
+        System.out.printf("Enter %sMiddle com.mfnhs.backend.data.Name (leave blank if not applicable): ", (description == null || description.isEmpty()) ? "" : description + " ");
         String middleName = scanner.nextLine();
         System.out.printf("Enter %sName Extension (e.g. Jr., Sr. II, III, etc.; leave blank if not applicable).%n> ", (description == null || description.isEmpty()) ? "" : description + " ");
         String nameExtension = scanner.nextLine();

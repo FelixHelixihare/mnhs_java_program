@@ -1,3 +1,6 @@
+package com.mfnhs.backend.manager;
+
+import com.mfnhs.backend.data.Address;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
@@ -127,7 +130,7 @@ public class AddressManager extends AbstractDataManager {
             break;
         }
 
-        System.out.print("Enter Street Address: ");
+        System.out.print("Enter Street com.mfnhs.backend.data.Address: ");
         street = scanner.nextLine();
 
         System.out.print("Enter ZIP code: ");

@@ -1,3 +1,10 @@
+package com.mfnhs.backend.manager;
+
+import com.mfnhs.backend.data.Name;
+import com.mfnhs.backend.data.Section;
+import com.mfnhs.backend.data.Strand;
+import com.mfnhs.backend.data.Teacher;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +40,7 @@ public class GeneralDataManager extends AbstractDataManager {
             }
         } catch (SQLException e) {
             System.err.println("LOADING STRANDS: " + e.getMessage());
+            throw new RuntimeException();
         }
 
         try {
@@ -58,6 +66,7 @@ public class GeneralDataManager extends AbstractDataManager {
             }
         } catch (SQLException e) {
             System.err.println("LOADING TEACHERS: " + e.getMessage());
+            throw new RuntimeException();
         }
 
         try {
@@ -77,6 +86,7 @@ public class GeneralDataManager extends AbstractDataManager {
             }
         } catch (SQLException e) {
             System.err.println("LOADING SECTIONS: " + e.getMessage());
+            throw new RuntimeException();
         }
 
         GeneralDataManager.strandList = strandList;
@@ -90,14 +100,12 @@ public class GeneralDataManager extends AbstractDataManager {
         }
         return null;
     }
-
     public Teacher findTeacher(int teacher_id) {
         for (Teacher i : teacherList) {
             if (i.get_id() == teacher_id) return i;
         }
         return null;
     }
-
     public Section findSection(int section_id) {
         for (Section i : sectionList) {
             if (i.get_id() == section_id) return i;
@@ -106,7 +114,7 @@ public class GeneralDataManager extends AbstractDataManager {
     }
 
     public void insertStrand(Connection conn) {
-        System.out.print("Enter Strand: ");
+        System.out.print("Enter com.mfnhs.backend.data.Strand: ");
         String strand_strand = scanner.nextLine();
         System.out.print("Enter Track: ");
         String strand_track = scanner.nextLine();
@@ -138,7 +146,6 @@ public class GeneralDataManager extends AbstractDataManager {
             System.err.println(e.getMessage());
         }
     }
-
     public void updateStrand(Connection conn, Strand strand) {
         boolean changed = false;
         Strand dummyStrand = new Strand(strand);
@@ -189,7 +196,6 @@ public class GeneralDataManager extends AbstractDataManager {
             System.err.println(e.getMessage());
         }
     }
-
     public void deleteStrand(Connection conn, Strand strand, StudentManager studentManager) {
         System.out.printf("Do you really wish to delete %s, %s? (Y/N): ", strand.get_strand(), strand.get_description());
         boolean confirm = get_booleanChoice(yesWords, noWords);
@@ -211,7 +217,6 @@ public class GeneralDataManager extends AbstractDataManager {
         studentManager.onStrandDelete(strand);
         strandList.remove(strand);
     }
-
     public void insertTeacher(Connection conn) {
         Name teacher_name = Name.createName(scanner, "");
         System.out.print("Enter Sex (M/F): ");
@@ -266,25 +271,25 @@ public class GeneralDataManager extends AbstractDataManager {
             int input = get_inputInt();
             switch (input) {
                 case 1:
-                    System.out.print("Enter new First Name: ");
+                    System.out.print("Enter new First com.mfnhs.backend.data.Name: ");
                     String newFirstName = scanner.nextLine();
                     dummyTeacher.set_first_name(newFirstName);
                     changed = true;
                     break;
                 case 2:
-                    System.out.print("Enter new Last Name: ");
+                    System.out.print("Enter new Last com.mfnhs.backend.data.Name: ");
                     String newLastName = scanner.nextLine();
                     dummyTeacher.set_last_name(newLastName);
                     changed = true;
                     break;
                 case 3:
-                    System.out.print("Enter new Middle Name: ");
+                    System.out.print("Enter new Middle com.mfnhs.backend.data.Name: ");
                     String newMiddleName = scanner.nextLine();
                     dummyTeacher.set_middle_name(newMiddleName);
                     changed = true;
                     break;
                 case 4:
-                    System.out.print("Enter new Name Extension (e.g. Jr., Sr. II, III, etc.; leave blank if not applicable).\n> ");
+                    System.out.print("Enter new com.mfnhs.backend.data.Name Extension (e.g. Jr., Sr. II, III, etc.; leave blank if not applicable).\n> ");
                     String newExtensionName = scanner.nextLine();
                     dummyTeacher.set_extension_name(newExtensionName);
                     changed = true;
@@ -336,7 +341,6 @@ public class GeneralDataManager extends AbstractDataManager {
             System.err.println(e.getMessage());
         }
     }
-
     public void deleteTeacher(Connection conn, Teacher teacher) {
         System.out.printf("Do you really wish to delete %s? (Y/N): ", teacher.get_fml_name_with_title());
         boolean confirm = get_booleanChoice(yesWords, noWords);
@@ -357,7 +361,6 @@ public class GeneralDataManager extends AbstractDataManager {
         }
         teacherList.remove(teacher);
     }
-
     public Strand selectStrand() {
         for (int i = 0; i < strandList.size(); i++) {
             Strand s = strandList.get(i);
@@ -375,7 +378,6 @@ public class GeneralDataManager extends AbstractDataManager {
             }
         }
     }
-
     public Teacher selectTeacher() {
         for (int i = 0; i < teacherList.size(); i++) {
             Teacher t = teacherList.get(i);
@@ -411,24 +413,23 @@ public class GeneralDataManager extends AbstractDataManager {
             }
         }
     }
-
     public void insertSection(Connection conn) {
-        System.out.print("Enter Section Name: ");
+        System.out.print("Enter com.mfnhs.backend.data.Section com.mfnhs.backend.data.Name: ");
         String section_name = scanner.nextLine();
         System.out.print("Enter Grade Level: ");
         int section_grade = get_inputInt();
 
-        System.out.println("Select Strand.");
+        System.out.println("Select com.mfnhs.backend.data.Strand.");
         Strand section_strand = selectStrand();
         if (section_strand == null) {
-            System.out.println("No strand selected. Section creation cancelled.");
+            System.out.println("No strand selected. com.mfnhs.backend.data.Section creation cancelled.");
             return;
         }
 
         System.out.println("Select Adviser.");
         Teacher section_adviser = selectTeacher();
         if (section_adviser == null) {
-            System.out.println("No teacher selected. Section creation cancelled.");
+            System.out.println("No teacher selected. com.mfnhs.backend.data.Section creation cancelled.");
             return;
         }
 
@@ -460,7 +461,6 @@ public class GeneralDataManager extends AbstractDataManager {
             System.err.println(e.getMessage());
         }
     }
-
     public void updateSection(Connection conn, Section section) {
         boolean changed = false;
         Section dummySection = new Section(section);
@@ -469,7 +469,7 @@ public class GeneralDataManager extends AbstractDataManager {
             int input = get_inputInt();
             switch (input) {
                 case 1:
-                    System.out.print("Enter new Section Name: ");
+                    System.out.print("Enter new com.mfnhs.backend.data.Section com.mfnhs.backend.data.Name: ");
                     String newName = scanner.nextLine();
                     dummySection.set_name(newName);
                     changed = true;
@@ -481,7 +481,7 @@ public class GeneralDataManager extends AbstractDataManager {
                     changed = true;
                     break;
                 case 3:
-                    System.out.println("Select new Strand.");
+                    System.out.println("Select new com.mfnhs.backend.data.Strand.");
                     Strand newStrand = selectStrand();
                     dummySection.set_strand(newStrand);
                     changed = true;
@@ -520,7 +520,6 @@ public class GeneralDataManager extends AbstractDataManager {
             System.err.println(e.getMessage());
         }
     }
-
     public void deleteSection(Connection conn, Section section, StudentManager studentManager) {
         System.out.printf("Do you really wish to delete Grade %s - %s? (Y/N): ", section.get_grade(), section.get_name());
         boolean confirm = get_booleanChoice(yesWords, noWords);
@@ -538,5 +537,9 @@ public class GeneralDataManager extends AbstractDataManager {
         System.out.printf("Successfully deleted Grade %s - %s.", section.get_grade(), section.get_name());
         studentManager.onSectionDelete(section);
         sectionList.remove(section);
+    }
+
+    public static int getSectionCount() {
+        return sectionList.size();
     }
 }

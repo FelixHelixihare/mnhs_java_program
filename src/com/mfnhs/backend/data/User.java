@@ -1,4 +1,5 @@
-import java.sql.Date;
+package com.mfnhs.backend.data;
+
 import java.sql.Timestamp;
 
 public class User {

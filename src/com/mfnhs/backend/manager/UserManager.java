@@ -1,3 +1,8 @@
+package com.mfnhs.backend.manager;
+
+import com.mfnhs.backend.data.Name;
+import com.mfnhs.backend.data.User;
+
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

@@ -1,3 +1,5 @@
+package com.mfnhs.backend.data;
+
 import java.sql.Date;
 import java.sql.Timestamp;
 
@@ -220,6 +222,7 @@ public class Student {
     }
 
     public int get_id() {return student_id;}
+    public Name get_name() {return student_name;}
     public String get_first_name() {return student_name.first_name;}
     public String get_last_name() {return student_name.last_name;}
     public String get_middle_name() {return student_name.middle_name;}
@@ -244,6 +247,7 @@ public class Student {
     public String get_4ps() {return student_4ps;}
     public String get_disability() {return student_disability;}
 
+    public Name get_father_name() {return student_father_name;}
     public String get_father_first_name() {return student_father_name.first_name;}
     public String get_father_last_name() {return student_father_name.last_name;}
     public String get_father_middle_name() {return student_father_name.middle_name;}
@@ -253,6 +257,7 @@ public class Student {
     public String get_father_fml_name() {return student_father_name.get_fml_name();}
     public String get_father_full_name() {return student_father_name.get_full_name();}
 
+    public Name get_mother_name() {return student_mother_name;}
     public String get_mother_first_name() {return student_mother_name.first_name;}
     public String get_mother_last_name() {return student_mother_name.last_name;}
     public String get_mother_middle_name() {return student_mother_name.middle_name;}
@@ -262,6 +267,7 @@ public class Student {
     public String get_mother_fml_name() {return student_mother_name.get_fml_name();}
     public String get_mother_full_name() {return student_mother_name.get_full_name();}
 
+    public Name get_guardian_name() {return student_guardian_name;}
     public String get_guardian_first_name() {return student_guardian_name.first_name;}
     public String get_guardian_last_name() {return student_guardian_name.last_name;}
     public String get_guardian_middle_name() {return student_guardian_name.middle_name;}
@@ -278,6 +284,7 @@ public class Student {
     public String get_current_address_city() {return student_current_address.city;}
     public String get_current_address_province() {return student_current_address.province;}
     public String get_current_address_region() {return student_current_address.region;}
+    public String get_current_address_zipcode() {return student_current_address.zipcode;}
 
     public Address get_permanent_address() {return student_permanent_address;}
     public String get_permanent_address_code() {return student_permanent_address.barangay_code;}
@@ -286,6 +293,7 @@ public class Student {
     public String get_permanent_address_city() {return student_permanent_address.city;}
     public String get_permanent_address_province() {return student_permanent_address.province;}
     public String get_permanent_address_region() {return student_permanent_address.region;}
+    public String get_permanent_address_zipcode() {return student_permanent_address.zipcode;}
 
     public Address get_birthplace() {return student_birthplace;}
     public String get_birthplace_code() {return student_birthplace.barangay_code;}
@@ -298,6 +306,7 @@ public class Student {
     public Strand get_strand() {return student_strand;}
     public Section get_section() {return student_section;}
 
+    public void set_id(int studentId) {student_id = studentId;}
     public void set_first_name(String firstName) {student_name.first_name = firstName;}
     public void set_last_name(String lastName) {student_name.last_name = lastName;}
     public void set_middle_name(String middleName) {student_name.middle_name = middleName;}
@@ -335,10 +344,10 @@ public class Student {
     public void set_strand(Strand strand) {student_strand = strand;}
 
     public void showValues() {
-        System.out.println("(1) First Name: " + student_name.first_name);
-        System.out.println("(2) Last Name: " + student_name.last_name);
-        System.out.println("(3) Middle Name: " + student_name.middle_name);
-        System.out.println("(4) Name Extension: " + (student_name.extension_name.isEmpty() ? "N/A" : student_name.extension_name));
+        System.out.println("(1) First com.mfnhs.backend.data.Name: " + student_name.first_name);
+        System.out.println("(2) Last com.mfnhs.backend.data.Name: " + student_name.last_name);
+        System.out.println("(3) Middle com.mfnhs.backend.data.Name: " + student_name.middle_name);
+        System.out.println("(4) com.mfnhs.backend.data.Name Extension: " + (student_name.extension_name.isEmpty() ? "N/A" : student_name.extension_name));
         System.out.println("(5) Birthdate: " + student_birthdate.toString());
         System.out.println("(6) Sex: " + (student_sex ? "Female" : "Male"));
         System.out.println("(7) Mother Tongue: " + student_mother_tongue);
@@ -347,20 +356,20 @@ public class Student {
         System.out.println("(10) Indigenous People: " + (student_indigenous_people.isEmpty() ? "N/A" : student_indigenous_people));
         System.out.println("(11) 4Ps Household Number: " + (student_4ps.isEmpty() ? "N/A" : student_4ps));
         System.out.println("(12) Disability: " + (student_disability.isEmpty() ? "N/A" : student_disability));
-        System.out.println("(13) Father First Name: " + student_father_name.first_name);
-        System.out.println("(14) Father Last Name: " + student_father_name.last_name);
-        System.out.println("(15) Father Middle Name: " + student_father_name.middle_name);
-        System.out.println("(16) Father Name Extension: " + (student_father_name.extension_name.isEmpty() ? "N/A" : student_father_name.extension_name));
-        System.out.println("(17) Mother First Name: " + student_mother_name.first_name);
-        System.out.println("(18) Mother Last Name: " + student_mother_name.last_name);
-        System.out.println("(19) Mother Middle Name: " + student_mother_name.middle_name);
-        System.out.println("(20) Mother Name Extension: " + (student_mother_name.extension_name.isEmpty() ? "N/A" : student_mother_name.extension_name));
-        System.out.println("(21) Guardian First Name: " + student_guardian_name.first_name);
-        System.out.println("(22) Guardian Last Name: " + student_guardian_name.last_name);
-        System.out.println("(23) Guardian Middle Name: " + student_guardian_name.middle_name);
-        System.out.println("(24) Guardian Name Extension: " + (student_guardian_name.extension_name.isEmpty() ? "N/A" : student_guardian_name.extension_name));
-        System.out.println("(25) Current Address: " + student_current_address.toString());
-        System.out.println("(26) Permanent Address: " + student_permanent_address.toString());
+        System.out.println("(13) Father First com.mfnhs.backend.data.Name: " + student_father_name.first_name);
+        System.out.println("(14) Father Last com.mfnhs.backend.data.Name: " + student_father_name.last_name);
+        System.out.println("(15) Father Middle com.mfnhs.backend.data.Name: " + student_father_name.middle_name);
+        System.out.println("(16) Father com.mfnhs.backend.data.Name Extension: " + (student_father_name.extension_name.isEmpty() ? "N/A" : student_father_name.extension_name));
+        System.out.println("(17) Mother First com.mfnhs.backend.data.Name: " + student_mother_name.first_name);
+        System.out.println("(18) Mother Last com.mfnhs.backend.data.Name: " + student_mother_name.last_name);
+        System.out.println("(19) Mother Middle com.mfnhs.backend.data.Name: " + student_mother_name.middle_name);
+        System.out.println("(20) Mother com.mfnhs.backend.data.Name Extension: " + (student_mother_name.extension_name.isEmpty() ? "N/A" : student_mother_name.extension_name));
+        System.out.println("(21) Guardian First com.mfnhs.backend.data.Name: " + student_guardian_name.first_name);
+        System.out.println("(22) Guardian Last com.mfnhs.backend.data.Name: " + student_guardian_name.last_name);
+        System.out.println("(23) Guardian Middle com.mfnhs.backend.data.Name: " + student_guardian_name.middle_name);
+        System.out.println("(24) Guardian com.mfnhs.backend.data.Name Extension: " + (student_guardian_name.extension_name.isEmpty() ? "N/A" : student_guardian_name.extension_name));
+        System.out.println("(25) Current com.mfnhs.backend.data.Address: " + student_current_address.toString());
+        System.out.println("(26) Permanent com.mfnhs.backend.data.Address: " + student_permanent_address.toString());
         System.out.println("(27) Birthplace: " + student_birthplace.toString());
         System.out.println("(0) Back / Apply Changes.");
     }

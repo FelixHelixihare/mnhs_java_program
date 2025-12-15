@@ -1,3 +1,5 @@
+package com.mfnhs.backend.data;
+
 public class Address {
     public String street;
     public String barangay_code;

@@ -1,3 +1,5 @@
+package com.mfnhs.backend.data;
+
 import java.sql.Timestamp;
 
 public class Teacher {
@@ -71,10 +73,10 @@ public class Teacher {
     }
 
     public void showValues() {
-        System.out.println("(1) First Name: " + get_first_name());
-        System.out.println("(2) Last Name: " + get_last_name());
-        System.out.println("(3) Middle Name: " + get_middle_name());
-        System.out.println("(4) Name Extension: " + get_extension_name());
+        System.out.println("(1) First com.mfnhs.backend.data.Name: " + get_first_name());
+        System.out.println("(2) Last com.mfnhs.backend.data.Name: " + get_last_name());
+        System.out.println("(3) Middle com.mfnhs.backend.data.Name: " + get_middle_name());
+        System.out.println("(4) com.mfnhs.backend.data.Name Extension: " + get_extension_name());
         System.out.println("(5) Sex: " + (teacher_sex ? "Female" : "Male"));
         System.out.println("(6) Marital Status: " + (teacher_married ? "Married" : "Single"));
         System.out.println("(0) Back / Apply Changes.");

@@ -1,0 +1,104 @@
+package com.main.com.mfnhs.frontend;
+
+import javax.swing.*;
+import javax.swing.border.*;
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.function.Consumer;
+
+public class MenuPanel extends JPanel {
+
+    private static final Color MENU_BG = Color.WHITE;
+    private static final Color ACCENT_GREEN = new Color(39, 115, 41);
+    private static final int COMPONENT_HEIGHT = 45; // Uniform height for buttons and combos
+
+    public MenuPanel(Consumer<String> navigator) {
+        setLayout(new BorderLayout());
+        setBackground(MENU_BG);
+        setBorder(new MatteBorder(0, 2, 0, 0, ACCENT_GREEN));
+
+        // Header Section
+        JPanel navHeader = new JPanel(new BorderLayout());
+        navHeader.setBackground(ACCENT_GREEN);
+        navHeader.setPreferredSize(new Dimension(400, 80));
+        JLabel title = new JLabel("MENU");
+        title.setForeground(Color.WHITE);
+        title.setFont(new Font("SansSerif", Font.BOLD, 22));
+        title.setBorder(new EmptyBorder(0, 25, 0, 0));
+        navHeader.add(title, BorderLayout.WEST);
+        add(navHeader, BorderLayout.NORTH);
+
+        // Center Content Section
+        JPanel content = new JPanel();
+        content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
+        content.setOpaque(false);
+        content.setBorder(new EmptyBorder(30, 40, 30, 40));
+
+        // Navigation Buttons
+        addMenuButton(content, "DASHBOARD", e -> navigator.accept(com.mfnhs.Main.CARD_DASHBOARD));
+        addMenuButton(content, "MASTERLIST", e -> navigator.accept(com.mfnhs.Main.CARD_MASTER));
+
+        // Fixed Dropdowns (Uniform size)
+        addMenuCombo(content, "STRAND", new String[]{"All Strands", "STEM", "ABM", "HUMSS", "GAS"});
+        addMenuCombo(content, "TRACK", new String[]{"All Tracks", "Academic", "TVL"});
+
+        // System Buttons
+        addMenuButton(content, "PRINT", e -> {});
+        addMenuButton(content, "HELP", e -> {});
+        
+        content.add(Box.createVerticalGlue());
+        
+        addMenuButton(content, "LOGOUT", e -> navigator.accept(com.mfnhs.Main.CARD_LOGIN));
+
+        add(content, BorderLayout.CENTER);
+    }
+
+    private void addMenuButton(JPanel container, String text, java.awt.event.ActionListener action) {
+        JButton b = new JButton(text);
+        styleComponent(b);
+        b.addActionListener(action);
+        
+        // Hover Feedback
+        b.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent e) { b.setBackground(new Color(245, 252, 245)); }
+            public void mouseExited(MouseEvent e) { b.setBackground(Color.WHITE); }
+        });
+
+        container.add(b);
+        container.add(Box.createRigidArea(new Dimension(0, 15)));
+    }
+
+    private void addMenuCombo(JPanel container, String title, String[] items) {
+        JComboBox<String> combo = new JComboBox<>(items);
+        styleComponent(combo);
+        
+        // Use a titled border to handle the label without taking extra vertical space
+        combo.setBorder(BorderFactory.createCompoundBorder(
+            new LineBorder(new Color(200, 200, 200), 1, true),
+            BorderFactory.createTitledBorder(new EmptyBorder(-10, 5, 0, 0), title, 
+                TitledBorder.LEFT, TitledBorder.TOP, new Font("SansSerif", Font.BOLD, 10), ACCENT_GREEN)
+        ));
+
+        container.add(combo);
+        container.add(Box.createRigidArea(new Dimension(0, 15)));
+    }
+
+    private void styleComponent(JComponent c) {
+        c.setPreferredSize(new Dimension(320, COMPONENT_HEIGHT));
+        c.setMaximumSize(new Dimension(320, COMPONENT_HEIGHT));
+        c.setFont(new Font("SansSerif", Font.BOLD, 14));
+        c.setBackground(Color.WHITE);
+        c.setForeground(Color.BLACK);
+        c.setFocusable(false);
+        
+        // Only apply standard border to non-combos (combos use TitledBorder above)
+        if (!(c instanceof JComboBox)) {
+            c.setBorder(new LineBorder(new Color(200, 200, 200), 1, true));
+        }
+        
+        if (c instanceof JButton) {
+            ((JButton) c).setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        }
+    }
+}

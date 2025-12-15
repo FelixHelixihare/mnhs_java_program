@@ -1,3 +1,7 @@
+package com.mfnhs.backend.manager;
+
+import com.mfnhs.backend.data.*;
+
 import java.sql.*;
 import java.sql.Date;
 import java.util.*;
@@ -13,7 +17,7 @@ public class StudentManager extends AbstractDataManager {
         this.generalDataManager = generalDataManager;
     }
 
-    public void insertStudent(Connection conn) {
+    public void terminalCreateStudent(Connection conn) {
         Name studentName = Name.createName(scanner, "");
         System.out.print("Enter Birthdate (YYYY-MM-DD): ");
         Date birthdate = get_inputDate();
@@ -38,13 +42,13 @@ public class StudentManager extends AbstractDataManager {
         Name motherName = Name.createName(scanner, "Mother");
         Name guardianName = Name.createName(scanner, "Guardian");
 
-        System.out.println("Enter Current Address.");
+        System.out.println("Enter Current com.mfnhs.backend.data.Address.");
         Address address = addressManager.createAddress();
-        System.out.print("Is Permanent Address same as Current Address? (Y/N) > ");
+        System.out.print("Is Permanent com.mfnhs.backend.data.Address same as Current com.mfnhs.backend.data.Address? (Y/N) > ");
         Address permanentAddress;
         if (get_booleanChoice(yesWords, noWords)) {permanentAddress = new Address(address);}
         else {
-            System.out.println("Enter Permanent Address.");
+            System.out.println("Enter Permanent com.mfnhs.backend.data.Address.");
             permanentAddress = addressManager.createAddress();
         }
         System.out.println("Enter Birthplace.");
@@ -182,12 +186,12 @@ public class StudentManager extends AbstractDataManager {
                 .setGuardianName(guardianName)
                 .setDateCreated(now)
                 .setCurrentAddress(address)
+                .setPermanentAddress(permanentAddress)
                 .setBirthplace(birthplace)
                 .setDateModified(now)
                 .build();
         studentList.add(student);
     }
-
     public void loadStudents(Connection conn) {
         List<Student> studentList = new ArrayList<>();
 
@@ -276,8 +280,7 @@ public class StudentManager extends AbstractDataManager {
 
         StudentManager.studentList = studentList;
     }
-
-    public Student selectStudent() {
+    public Student terminalSelectStudent() {
         for (int i = 0; i < studentList.size(); i++) {
             Student s = studentList.get(i);
             System.out.printf("(%s) %s%n", i+1, s.get_fml_name());
@@ -294,8 +297,7 @@ public class StudentManager extends AbstractDataManager {
             }
         }
     }
-
-    public void updateStudent(Connection conn, Student student) {
+    public void terminalStudentUpdate(Connection conn, Student student) {
         boolean changed = false;
         Student dummyStudent = new Student(student);
         loop: while (true) {
@@ -303,25 +305,25 @@ public class StudentManager extends AbstractDataManager {
             int input = get_inputInt();
             switch (input) {
                 case 1:
-                    System.out.print("Enter new First Name: ");
+                    System.out.print("Enter new First com.mfnhs.backend.data.Name: ");
                     String newFirstName = scanner.nextLine();
                     dummyStudent.set_first_name(newFirstName);
                     changed = true;
                     break;
                 case 2:
-                    System.out.print("Enter new Last Name: ");
+                    System.out.print("Enter new Last com.mfnhs.backend.data.Name: ");
                     String newLastName = scanner.nextLine();
                     dummyStudent.set_last_name(newLastName);
                     changed = true;
                     break;
                 case 3:
-                    System.out.print("Enter new Middle Name: ");
+                    System.out.print("Enter new Middle com.mfnhs.backend.data.Name: ");
                     String newMiddleName = scanner.nextLine();
                     dummyStudent.set_middle_name(newMiddleName);
                     changed = true;
                     break;
                 case 4:
-                    System.out.print("Enter new Name Extension (e.g. Jr., Sr. II, III, etc.; leave blank if not applicable).\n> ");
+                    System.out.print("Enter new com.mfnhs.backend.data.Name Extension (e.g. Jr., Sr. II, III, etc.; leave blank if not applicable).\n> ");
                     String newExtensionName = scanner.nextLine();
                     dummyStudent.set_extension_name(newExtensionName);
                     changed = true;
@@ -375,85 +377,85 @@ public class StudentManager extends AbstractDataManager {
                     changed = true;
                     break;
                 case 13:
-                    System.out.print("Enter new Father's First Name: ");
+                    System.out.print("Enter new Father's First com.mfnhs.backend.data.Name: ");
                     String newFatherFirstName = scanner.nextLine();
                     dummyStudent.set_father_first_name(newFatherFirstName);
                     changed = true;
                     break;
                 case 14:
-                    System.out.print("Enter new Father's Last Name: ");
+                    System.out.print("Enter new Father's Last com.mfnhs.backend.data.Name: ");
                     String newFatherLastName = scanner.nextLine();
                     dummyStudent.set_father_last_name(newFatherLastName);
                     changed = true;
                     break;
                 case 15:
-                    System.out.print("Enter new Father's Middle Name: ");
+                    System.out.print("Enter new Father's Middle com.mfnhs.backend.data.Name: ");
                     String newFatherMiddleName = scanner.nextLine();
                     dummyStudent.set_father_middle_name(newFatherMiddleName);
                     changed = true;
                     break;
                 case 16:
-                    System.out.print("Enter new Father's Name Extension (e.g. Jr., Sr. II, III, etc.; leave blank if not applicable).\n> ");
+                    System.out.print("Enter new Father's com.mfnhs.backend.data.Name Extension (e.g. Jr., Sr. II, III, etc.; leave blank if not applicable).\n> ");
                     String newFatherExtensionName = scanner.nextLine();
                     dummyStudent.set_father_extension_name(newFatherExtensionName);
                     changed = true;
                     break;
                 case 17:
-                    System.out.print("Enter new Mother's First Name: ");
+                    System.out.print("Enter new Mother's First com.mfnhs.backend.data.Name: ");
                     String newMotherFirstName = scanner.nextLine();
                     dummyStudent.set_mother_first_name(newMotherFirstName);
                     changed = true;
                     break;
                 case 18:
-                    System.out.print("Enter new Mother's Last Name: ");
+                    System.out.print("Enter new Mother's Last com.mfnhs.backend.data.Name: ");
                     String newMotherLastName = scanner.nextLine();
                     dummyStudent.set_mother_last_name(newMotherLastName);
                     changed = true;
                     break;
                 case 19:
-                    System.out.print("Enter new Mother's Middle Name: ");
+                    System.out.print("Enter new Mother's Middle com.mfnhs.backend.data.Name: ");
                     String newMotherMiddleName = scanner.nextLine();
                     dummyStudent.set_mother_middle_name(newMotherMiddleName);
                     changed = true;
                     break;
                 case 20:
-                    System.out.print("Enter new Mother's Name Extension (e.g. Jr., Sr. II, III, etc.; leave blank if not applicable).\n> ");
+                    System.out.print("Enter new Mother's com.mfnhs.backend.data.Name Extension (e.g. Jr., Sr. II, III, etc.; leave blank if not applicable).\n> ");
                     String newMotherExtensionName = scanner.nextLine();
                     dummyStudent.set_mother_extension_name(newMotherExtensionName);
                     changed = true;
                     break;
                 case 21:
-                    System.out.print("Enter new Guardian's First Name: ");
+                    System.out.print("Enter new Guardian's First com.mfnhs.backend.data.Name: ");
                     String newGuardianFirstName = scanner.nextLine();
                     dummyStudent.set_guardian_first_name(newGuardianFirstName);
                     changed = true;
                     break;
                 case 22:
-                    System.out.print("Enter new Guardian's Last Name: ");
+                    System.out.print("Enter new Guardian's Last com.mfnhs.backend.data.Name: ");
                     String newGuardianLastName = scanner.nextLine();
                     dummyStudent.set_guardian_last_name(newGuardianLastName);
                     changed = true;
                     break;
                 case 23:
-                    System.out.print("Enter new Guardian's Middle Name: ");
+                    System.out.print("Enter new Guardian's Middle com.mfnhs.backend.data.Name: ");
                     String newGuardianMiddleName = scanner.nextLine();
                     dummyStudent.set_guardian_middle_name(newGuardianMiddleName);
                     changed = true;
                     break;
                 case 24:
-                    System.out.print("Enter new Guardian's Name Extension (e.g. Jr., Sr. II, III, etc.; leave blank if not applicable).\n> ");
+                    System.out.print("Enter new Guardian's com.mfnhs.backend.data.Name Extension (e.g. Jr., Sr. II, III, etc.; leave blank if not applicable).\n> ");
                     String newGuardianExtensionName = scanner.nextLine();
                     dummyStudent.set_guardian_extension_name(newGuardianExtensionName);
                     changed = true;
                     break;
                 case 25:
-                    System.out.println("Enter Current Address.");
+                    System.out.println("Enter Current com.mfnhs.backend.data.Address.");
                     Address address = addressManager.createAddress();
                     dummyStudent.set_current_address(address);
                     changed = true;
                     break;
                 case 26:
-                    System.out.println("Enter Permanent Address.");
+                    System.out.println("Enter Permanent com.mfnhs.backend.data.Address.");
                     Address permanentAddress = addressManager.createAddress();
                     dummyStudent.set_permanent_address(permanentAddress);
                     changed = true;
@@ -571,8 +573,7 @@ public class StudentManager extends AbstractDataManager {
             System.err.println(e.getMessage());
         }
     }
-
-    public void deleteStudent(Connection conn, Student student) {
+    public void terminalDeleteStudent(Connection conn, Student student) {
         System.out.printf("Do you really wish to delete %s? (Y/N): ", student.get_fml_name());
         boolean confirm = get_booleanChoice(yesWords, noWords);
         if (!confirm) return;
@@ -600,5 +601,136 @@ public class StudentManager extends AbstractDataManager {
         for (Student i : studentList) {
             if (i.get_strand().equals(strand)) i.set_strand(null);
         }
+    }
+
+    public void createStudent(Student student, Connection conn) throws SQLException {
+        Name studentName = student.get_name();
+        Name fatherName = student.get_father_name();
+        Name motherName = student.get_mother_name();
+        Name guardianName = student.get_guardian_name();
+        Address address = student.get_current_address();
+        Address permanentAddress = student.get_permanent_address();
+        Address birthplace = student.get_birthplace();
+        Timestamp now = new Timestamp(System.currentTimeMillis());
+        try {
+            String sql = "INSERT INTO student(" +
+                    "student_first_name, " +
+                    "student_last_name, " +
+                    "student_middle_name, " +
+                    "student_extension_name, " +
+                    "student_birthdate, " +
+                    "student_sex," +
+                    "student_mother_tongue," +
+                    "student_birth_certificate_number," +
+                    "student_lrn," +
+                    "student_indigenous_people," +
+                    "student_4ps," +
+                    "student_disability," +
+                    "student_father_first_name," +
+                    "student_father_last_name," +
+                    "student_father_middle_name," +
+                    "student_father_extension_name," +
+                    "student_mother_first_name," +
+                    "student_mother_last_name," +
+                    "student_mother_middle_name," +
+                    "student_mother_extension_name," +
+                    "student_guardian_first_name," +
+                    "student_guardian_last_name," +
+                    "student_guardian_middle_name," +
+                    "student_guardian_extension_name," +
+                    "student_current_address_code," +
+                    "student_current_address_street," +
+                    "student_current_address_barangay," +
+                    "student_current_address_city," +
+                    "student_current_address_province," +
+                    "student_current_address_region," +
+                    "student_current_address_zipcode," +
+                    "student_permanent_address_code," +
+                    "student_permanent_address_street," +
+                    "student_permanent_address_barangay," +
+                    "student_permanent_address_city," +
+                    "student_permanent_address_province," +
+                    "student_permanent_address_region," +
+                    "student_permanent_address_zipcode," +
+                    "student_birthplace_code," +
+                    "student_birthplace_street," +
+                    "student_birthplace_barangay," +
+                    "student_birthplace_city," +
+                    "student_birthplace_province," +
+                    "student_birthplace_region," +
+                    "student_birthplace_zipcode," +
+                    "student_date_created," +
+                    "student_date_modified) " +
+                    "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) " + //--ALTER!!! MULTIPLE COLUMNS ADDED TO TABLE-- ALTERRED!
+                    "RETURNING student_id";
+            PreparedStatement preparedStatement = conn.prepareStatement(sql);
+            preparedStatement.setString(1, studentName.first_name);
+            preparedStatement.setString(2, studentName.last_name);
+            preparedStatement.setString(3, studentName.middle_name);
+            preparedStatement.setString(4, studentName.extension_name);
+            preparedStatement.setDate(5, student.get_birthdate());
+            preparedStatement.setBoolean(6, student.get_sex());
+            preparedStatement.setString(7, student.get_mother_tongue());
+            preparedStatement.setString(8, student.get_birth_certificate_number());
+            preparedStatement.setString(9, student.get_lrn());
+            preparedStatement.setString(10, student.get_indigenous_people());
+            preparedStatement.setString(11, student.get_4ps());
+            preparedStatement.setString(12, student.get_disability());
+            preparedStatement.setString(13, fatherName.first_name);
+            preparedStatement.setString(14, fatherName.last_name);
+            preparedStatement.setString(15, fatherName.middle_name);
+            preparedStatement.setString(16, fatherName.extension_name);
+            preparedStatement.setString(17, motherName.first_name);
+            preparedStatement.setString(18, motherName.last_name);
+            preparedStatement.setString(19, motherName.middle_name);
+            preparedStatement.setString(20, motherName.extension_name);
+            preparedStatement.setString(21, guardianName.first_name);
+            preparedStatement.setString(22, guardianName.last_name);
+            preparedStatement.setString(23, guardianName.middle_name);
+            preparedStatement.setString(24, guardianName.extension_name);
+            preparedStatement.setString(25, address.barangay_code);
+            preparedStatement.setString(26, address.street);
+            preparedStatement.setString(27, address.barangay);
+            preparedStatement.setString(28, address.city);
+            preparedStatement.setString(29, address.province);
+            preparedStatement.setString(30, address.region);
+            preparedStatement.setString(31, address.zipcode);
+            preparedStatement.setString(32, permanentAddress.barangay_code);
+            preparedStatement.setString(33, permanentAddress.street);
+            preparedStatement.setString(34, permanentAddress.barangay);
+            preparedStatement.setString(35, permanentAddress.city);
+            preparedStatement.setString(36, permanentAddress.province);
+            preparedStatement.setString(37, permanentAddress.region);
+            preparedStatement.setString(38, permanentAddress.zipcode);
+            preparedStatement.setString(39, birthplace.barangay_code);
+            preparedStatement.setString(40, birthplace.street);
+            preparedStatement.setString(41, birthplace.barangay);
+            preparedStatement.setString(42, birthplace.city);
+            preparedStatement.setString(43, birthplace.province);
+            preparedStatement.setString(44, birthplace.region);
+            preparedStatement.setString(45, birthplace.zipcode);
+            preparedStatement.setTimestamp(46, now);
+            preparedStatement.setTimestamp(47, now);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            student.set_id(resultSet.getInt(resultSet.getInt("student_id")));
+        } catch (SQLException e) {
+            //e.printStackTrace();
+            System.err.println(e.getMessage());
+            throw e;
+            //return;
+        }
+        studentList.add(student);
+    }
+
+    public static int getStudentCount() {
+        return studentList.size();
+    }
+
+    public static Object[][] objectifyStudentList() {
+        List<Object[]> newSample = new ArrayList<>();
+        for (Student i : studentList) {
+            newSample.add(new Object[]{i.get_lrn(), i.get_last_name(), i.get_middle_name(), i.get_first_name(), "MyTrack", "MyStrand"});
+        }
+        return newSample.toArray(new Object[0][]);
     }
 }

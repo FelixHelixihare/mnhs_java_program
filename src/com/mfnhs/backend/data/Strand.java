@@ -1,3 +1,5 @@
+package com.mfnhs.backend.data;
+
 import java.util.List;
 
 public class Strand {
@@ -39,7 +41,7 @@ public class Strand {
     public String get_description() {return strand_description;}
 
     public void showValues() {
-        System.out.println("(1) Strand: " + strand_strand);
+        System.out.println("(1) com.mfnhs.backend.data.Strand: " + strand_strand);
         System.out.println("(2) Track: " + strand_track);
         System.out.println("(3) Description: " + strand_description);
         System.out.println("(0) Back / Apply Changes.");

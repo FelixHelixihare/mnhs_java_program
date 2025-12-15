@@ -1,3 +1,5 @@
+package com.mfnhs.backend.data;
+
 import java.util.List;
 
 public class Section {
@@ -47,9 +49,9 @@ public class Section {
     public void set_adviser(Teacher teacher) {this.section_adviser = teacher;}
 
     public void showValues() {
-        System.out.println("(1) Section Name: " + get_name());
+        System.out.println("(1) com.mfnhs.backend.data.Section com.mfnhs.backend.data.Name: " + get_name());
         System.out.println("(2) Grade Level: " + get_grade());
-        System.out.printf("(3) Strand: %s, %s%n", section_strand.get_strand(), section_strand.get_description());
+        System.out.printf("(3) com.mfnhs.backend.data.Strand: %s, %s%n", section_strand.get_strand(), section_strand.get_description());
         System.out.println("(4) Adviser: " + get_adviser().get_fml_name_with_title());
         System.out.println("(0) Back / Apply Changes.");
     }
