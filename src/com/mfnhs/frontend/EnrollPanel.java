@@ -344,6 +344,8 @@ public class EnrollPanel extends JPanel {
             }
             navigator.accept(App.CARD_DASHBOARD);
             JOptionPane.showMessageDialog(parent, "Enrollment confirmed.", "Success", JOptionPane.INFORMATION_MESSAGE);
+            App.updateMasterlist();
+            App.updateDashboardCounts();
         });
         btnRow.add(no);
         btnRow.add(yes);

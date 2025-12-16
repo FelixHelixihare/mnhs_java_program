@@ -3,12 +3,16 @@ package com.mfnhs.frontend;
 import com.mfnhs.backend.manager.StudentManager;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 import java.awt.*;
 import java.util.function.Consumer;
 
 public class MasterlistPanel extends JPanel {
 
     private static Object[][] masterList;
+    private JTable masterlistTable;
+    String[] cols = new String[]{"LRN","Last Name","First Name","Middle Name","Track","Strand"};
 
     public MasterlistPanel(Consumer<String> navigator) {
         setLayout(new BorderLayout(8,8));
@@ -29,17 +33,17 @@ public class MasterlistPanel extends JPanel {
         add(topFilters, BorderLayout.NORTH);
 
         // Masterlist table
-        String[] cols = new String[]{"LRN","Last Name","First Name","Middle Name","Track","Strand"};
+        //String[] cols = new String[]{"LRN","Last Name","First Name","Middle Name","Track","Strand"};
         Object[][] sample = new Object[][]{
             {"123456789101","Gimolatan","Brandon","Antonio","Track A","STEM"},
             {"11111111111111111111","Doe","John","M","Track B","ABM"}
         };
-        updateMasterlist();
-        JTable table = new JTable(masterList, cols);
-        table.setFillsViewportHeight(true);
-        table.setRowHeight(30);
-        table.getTableHeader().setReorderingAllowed(false);
-        JScrollPane sp = new JScrollPane(table);
+        updateMasterList();
+        masterlistTable = new JTable(masterList, cols);
+        masterlistTable.setFillsViewportHeight(true);
+        masterlistTable.setRowHeight(30);
+        masterlistTable.getTableHeader().setReorderingAllowed(false);
+        JScrollPane sp = new JScrollPane(masterlistTable);
         sp.setBorder(BorderFactory.createLineBorder(new Color(200,200,200), 1, true));
         add(sp, BorderLayout.CENTER);
 
@@ -51,7 +55,13 @@ public class MasterlistPanel extends JPanel {
         add(footer, BorderLayout.SOUTH);
     }
 
-    public static void updateMasterlist() {
+    public void updateMasterList() {
         masterList = StudentManager.objectifyStudentList();
+    }
+
+    public void updateTable() {
+        updateMasterList();
+        masterList = StudentManager.objectifyStudentList();
+        masterlistTable.setModel(new DefaultTableModel(masterList, cols));
     }
 }

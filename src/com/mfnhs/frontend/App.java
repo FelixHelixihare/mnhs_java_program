@@ -12,6 +12,9 @@ public class App {
     public static final String CARD_SECTIONS = "SECTIONS";
     public static final String CARD_TRACKS = "TRACKS";
 
+    private static MasterlistPanel masterlistPanel;
+    private static DashboardPanel dashboardPanel;
+
     private JFrame frame;
     private JPanel container;
     private CardLayout cards;
@@ -58,6 +61,9 @@ public class App {
         container.add(sections, CARD_SECTIONS);
         container.add(tracks, CARD_TRACKS);
 
+        masterlistPanel = master;
+        dashboardPanel = dashboard;
+
         frame.setContentPane(root);
         frame.pack();
         frame.setLocationRelativeTo(null);
@@ -72,6 +78,14 @@ public class App {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(App::new);
+    }
+
+    public static void updateMasterlist() {
+        masterlistPanel.updateTable();
+    }
+
+    public static void updateDashboardCounts() {
+        dashboardPanel.updateCounts();
     }
 }
 
