@@ -1,10 +1,14 @@
 package com.mfnhs.frontend;
 
+import com.mfnhs.Main;
+import com.mfnhs.backend.data.AuthResult;
+
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import java.awt.*;
+import java.util.Arrays;
 import java.util.function.Consumer;
 
 public class LoginPanel extends JPanel {
@@ -13,6 +17,10 @@ public class LoginPanel extends JPanel {
     private static final Color BG = Theme.OUTER_BG;
     private static final Color CARD = Theme.CARD_BG;
     private static final Color ACCENT = Theme.ACCENT;
+
+    private JTextField usernameField;
+    private JPasswordField passwordField;
+    private Window parent = SwingUtilities.getWindowAncestor(this);
 
     public LoginPanel(Consumer<String> navigator) {
         setLayout(new GridBagLayout());
@@ -62,15 +70,15 @@ public class LoginPanel extends JPanel {
         inner.add(userLabel);
         inner.add(Box.createRigidArea(new Dimension(0, 6)));
 
-        PlaceholderTextField userId = new PlaceholderTextField("Enter your User ID");
-        userId.setMaximumSize(new Dimension(760, 56));
-        userId.setPreferredSize(new Dimension(760, 56));
-        userId.setAlignmentX(Component.CENTER_ALIGNMENT);
-        userId.setFont(userId.getFont().deriveFont(18f));
-        userId.setBorder(new CompoundBorder(new LineBorder(ACCENT, 2, true), new EmptyBorder(8, 12, 8, 12)));
-        userId.setToolTipText("User ID");
-        userId.setBackground(new Color(252,252,250));
-        inner.add(userId);
+        usernameField = new PlaceholderTextField("Enter your User ID");
+        usernameField.setMaximumSize(new Dimension(760, 56));
+        usernameField.setPreferredSize(new Dimension(760, 56));
+        usernameField.setAlignmentX(Component.CENTER_ALIGNMENT);
+        usernameField.setFont(usernameField.getFont().deriveFont(18f));
+        usernameField.setBorder(new CompoundBorder(new LineBorder(ACCENT, 2, true), new EmptyBorder(8, 12, 8, 12)));
+        usernameField.setToolTipText("User ID");
+        usernameField.setBackground(new Color(252,252,250));
+        inner.add(usernameField);
         inner.add(Box.createRigidArea(new Dimension(0, 12)));
 
         JLabel passLabel = new JLabel("Password");
@@ -79,14 +87,14 @@ public class LoginPanel extends JPanel {
         inner.add(passLabel);
         inner.add(Box.createRigidArea(new Dimension(0, 6)));
 
-        PlaceholderPasswordField password = new PlaceholderPasswordField("Enter your Password");
-        password.setMaximumSize(new Dimension(760, 56));
-        password.setPreferredSize(new Dimension(760, 56));
-        password.setAlignmentX(Component.CENTER_ALIGNMENT);
-        password.setFont(password.getFont().deriveFont(18f));
-        password.setBorder(new CompoundBorder(new LineBorder(ACCENT, 2, true), new EmptyBorder(8, 12, 8, 12)));
-        password.setBackground(new Color(252,252,250));
-        inner.add(password);
+        passwordField = new PlaceholderPasswordField("Enter your Password");
+        passwordField.setMaximumSize(new Dimension(760, 56));
+        passwordField.setPreferredSize(new Dimension(760, 56));
+        passwordField.setAlignmentX(Component.CENTER_ALIGNMENT);
+        passwordField.setFont(passwordField.getFont().deriveFont(18f));
+        passwordField.setBorder(new CompoundBorder(new LineBorder(ACCENT, 2, true), new EmptyBorder(8, 12, 8, 12)));
+        passwordField.setBackground(new Color(252,252,250));
+        inner.add(passwordField);
         inner.add(Box.createRigidArea(new Dimension(0, 18)));
 
         // Prominent login button
@@ -98,7 +106,15 @@ public class LoginPanel extends JPanel {
         login.setFont(login.getFont().deriveFont(Font.BOLD, 20f));
         login.setMaximumSize(new Dimension(340, 60));
         login.setPreferredSize(new Dimension(340, 60));
-        login.addActionListener(e -> navigator.accept(App.CARD_DASHBOARD));
+        login.addActionListener(e -> {
+            AuthResult result = Main.authenticate(usernameField.getText(), new String(passwordField.getPassword()));
+            switch (result) {
+                case DATABASE_ERROR -> JOptionPane.showMessageDialog(parent, "Failed to communicate with database.", "Database Failure", JOptionPane.INFORMATION_MESSAGE);
+                case NO_USER -> JOptionPane.showMessageDialog(parent, String.format("User %s cannot be found.", usernameField.getText()), "Authentication Failure", JOptionPane.INFORMATION_MESSAGE);
+                case WRONG_PASSWORD -> JOptionPane.showMessageDialog(parent, "Password does not match.", "Authentication Failure", JOptionPane.INFORMATION_MESSAGE);
+                case SUCCESS -> navigator.accept(App.CARD_DASHBOARD);
+            }
+        });
         inner.add(login);
 
         gbc.gridy++;

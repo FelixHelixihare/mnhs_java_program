@@ -1,5 +1,6 @@
 package com.mfnhs.backend.manager;
 
+import com.mfnhs.backend.data.AuthResult;
 import com.mfnhs.backend.data.Name;
 import com.mfnhs.backend.data.User;
 
@@ -51,24 +52,22 @@ public class UserManager extends AbstractDataManager {
 
         System.out.print("Enter password: ");
         String password = scanner.nextLine();
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        //Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
         try {
             String sql = "INSERT INTO user(user_first_name," +
                     "user_last_name," +
                     "user_middle_name," +
                     "user_extension_name," +
-                    "user_date_created," +
                     "user_username)" +
-                    "VALUES(?,?,?,?,?,?)" +
+                    "VALUES(?,?,?,?,?)" +
                     "RETURNING user_id";
             PreparedStatement preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setString(1, name.first_name);
             preparedStatement.setString(2, name.last_name);
             preparedStatement.setString(3, name.middle_name);
             preparedStatement.setString(4, name.extension_name);
-            preparedStatement.setTimestamp(5, timestamp);
-            preparedStatement.setString(6, username);
+            preparedStatement.setString(5, username);
             ResultSet test = preparedStatement.executeQuery();
             int autoincrement_id = test.getInt("user_id");
             test.close();
@@ -90,48 +89,35 @@ public class UserManager extends AbstractDataManager {
         }
     }
 
-    public boolean login(Connection conn) {
-        System.out.print("Enter username: ");
-        String username;
-        while (true) {
-            try {
-                username = scanner.nextLine();
-                String sql = "SELECT EXISTS(SELECT 1 FROM user WHERE user_username=?) as row_exists;";
-                PreparedStatement preparedStatement = conn.prepareStatement(sql);
-                preparedStatement.setString(1, username);
-                ResultSet rs = preparedStatement.executeQuery();
-                rs.next();
-                if (rs.getBoolean("row_exists")) {
-                    break;
-                } else {
-                    System.out.print("No such user exists. Try again: ");
-                }
-            } catch (SQLException e) {
-                System.err.println(e.getMessage());
-                return false;
-            }
+    public AuthResult login(String username, String password, Connection conn) {
+        //System.out.print("Enter username: ");
+        //String username;
+        try {
+            //username = scanner.nextLine();
+            String sql = "SELECT EXISTS(SELECT 1 FROM user WHERE user_username=?) as row_exists;";
+            PreparedStatement preparedStatement = conn.prepareStatement(sql);
+            preparedStatement.setString(1, username);
+            ResultSet rs = preparedStatement.executeQuery();
+            rs.next();
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+            return AuthResult.DATABASE_ERROR;
         }
 
-        System.out.print("Enter password: ");
-        String password = scanner.nextLine();
+        //System.out.print("Enter password: ");
+        //String password = scanner.nextLine();
 
         try {
-            String sql = "SELECT user_id," +
-                    "user_first_name, " +
-                    "user_last_name, " +
-                    "user_middle_name, " +
-                    "user_extension_name, " +
-                    "user_date_created " +
-                    "FROM user WHERE user_username=?;";
+            String sql = "SELECT * FROM user WHERE user_username=?;";
             PreparedStatement preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setString(1, username);
             ResultSet userResultSet = preparedStatement.executeQuery();
             userResultSet.next();
-            String user_id = userResultSet.getString("user_id");
+            int user_id = userResultSet.getInt("user_id");
 
             sql = "SELECT user_password, password_salt FROM password WHERE user_id=?";
             preparedStatement = conn.prepareStatement(sql);
-            preparedStatement.setString(1, user_id);
+            preparedStatement.setInt(1, user_id);
             ResultSet passwordResultSet = preparedStatement.executeQuery();
             passwordResultSet.next();
 
@@ -145,18 +131,19 @@ public class UserManager extends AbstractDataManager {
                         userResultSet.getString("user_first_name"),
                         userResultSet.getString("user_last_name"),
                         userResultSet.getString("user_middle_name"),
-                        userResultSet.getString("user_extension_name"),
-                        userResultSet.getTimestamp("user_date_created")
+                        userResultSet.getString("user_extension_name")
                 );
                 System.out.println("Login success! Welcome " + currentUser.get_fml_name() + "!");
             } else {
                 System.out.println("Password stored does not match password entered.");
+                return AuthResult.WRONG_PASSWORD;
             }
 
         } catch (SQLException e) {
-            System.err.println(e.getMessage());
-            return false;
+            e.printStackTrace();
+            //System.err.println(e.getMessage());
+            return AuthResult.DATABASE_ERROR;
         }
-        return true;
+        return AuthResult.SUCCESS;
     }
 }

@@ -1,16 +1,16 @@
 package com.mfnhs;
 
-import com.mfnhs.backend.data.Section;
-import com.mfnhs.backend.data.Strand;
-import com.mfnhs.backend.data.Student;
-import com.mfnhs.backend.data.Teacher;
+import com.mfnhs.backend.data.*;
 import com.mfnhs.backend.manager.GeneralDataManager;
 import com.mfnhs.backend.manager.StudentManager;
 import com.mfnhs.backend.manager.UserManager;
 import com.mfnhs.frontend.App;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.*;
+import java.util.Arrays;
 import java.util.Scanner;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
@@ -23,6 +23,17 @@ public class Main {
     //private static final com.mfnhs.backend.manager.AddressManager addressManager = new com.mfnhs.backend.manager.AddressManager(scanner);
     private static final GeneralDataManager generalDataManager = new GeneralDataManager(scanner);
     private static final StudentManager studentManager = new StudentManager(scanner, generalDataManager);
+    private final static MessageDigest messageDigest;
+
+    static {
+        try {
+            messageDigest = MessageDigest.getInstance("SHA-512");
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static User currentUser;
 
     static {
         try {
@@ -44,6 +55,7 @@ public class Main {
         }
 
         App.main(args);
+        //terminalInput();
     }
 
     public static void terminalInput() {
@@ -62,8 +74,8 @@ public class Main {
                         displayLoggedOutChoices();
                         break;
                     case 2: //Login
-                        if (userManager.login(conn)) displayLoggedInChoices();
-                        else displayLoggedOutChoices();
+                        //if (userManager.login(conn)) displayLoggedInChoices();
+                        //else displayLoggedOutChoices();
                         break;
                     default:
                         System.out.println("Please choose an integer from 0 to 2.");
@@ -189,4 +201,9 @@ public class Main {
     public static void createStudent(Student student) throws SQLException {
         studentManager.createStudent(student, conn);
     }
+
+    public static AuthResult authenticate(String username, String password) {
+        return userManager.login(username, password, conn);
+    }
+
 }

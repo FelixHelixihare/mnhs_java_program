@@ -6,6 +6,7 @@ import java.sql.Timestamp;
 public class Student {
     private int student_id;
     private Name student_name;
+    private String student_contact_number;
     private Date student_birthdate;
     private boolean student_sex;
     private String student_mother_tongue;
@@ -15,8 +16,11 @@ public class Student {
     private String student_4ps;
     private String student_disability;
     private Name student_father_name;
+    private String student_father_contact_number;
     private Name student_mother_name;
+    private String student_mother_contact_number;
     private Name student_guardian_name;
+    private String student_guardian_contact_number;
     private Address student_current_address;
     private Address student_permanent_address;
     private Address student_birthplace;
@@ -52,6 +56,10 @@ public class Student {
         this.student_date_modified = student.student_date_modified;
         this.student_user_created = student.student_user_created;
         this.student_user_modified = student.student_user_modified;
+        this.student_contact_number = student.student_contact_number;
+        this.student_father_contact_number = student.student_father_contact_number;
+        this.student_mother_contact_number = student.student_mother_contact_number;
+        this.student_guardian_contact_number = student.student_guardian_contact_number;
     }
 
     public Student(Builder builder) {
@@ -77,6 +85,10 @@ public class Student {
         this.student_date_modified = builder.student_date_modified;
         this.student_user_created = builder.student_user_created;
         this.student_user_modified = builder.student_user_modified;
+        this.student_contact_number = builder.student_contact_number;
+        this.student_father_contact_number = builder.student_father_contact_number;
+        this.student_mother_contact_number = builder.student_mother_contact_number;
+        this.student_guardian_contact_number = builder.student_guardian_contact_number;
     }
 
     public void copy(Student student) {
@@ -102,12 +114,16 @@ public class Student {
         this.student_date_modified = student.student_date_modified;
         this.student_user_created = student.student_user_created;
         this.student_user_modified = student.student_user_modified;
-
+        this.student_contact_number = student.student_contact_number;
+        this.student_father_contact_number = student.student_father_contact_number;
+        this.student_mother_contact_number = student.student_mother_contact_number;
+        this.student_guardian_contact_number = student.student_guardian_contact_number;
     }
 
     public static class Builder {
         private int student_id;
         private Name student_name;
+        private String student_contact_number;
         private Date student_birthdate;
         private boolean student_sex;
         private String student_mother_tongue;
@@ -117,8 +133,11 @@ public class Student {
         private String student_4ps;
         private String student_disability;
         private Name student_father_name;
+        private String student_father_contact_number;
         private Name student_mother_name;
+        private String student_mother_contact_number;
         private Name student_guardian_name;
+        private String student_guardian_contact_number;
         private Address student_current_address;
         private Address student_permanent_address;
         private Address student_birthplace;
@@ -216,6 +235,22 @@ public class Student {
             this.student_section = section;
             return this;
         }
+        public Builder setContactNumber(String contactNumber) {
+            this.student_contact_number = contactNumber;
+            return this;
+        }
+        public Builder setFatherContactNumber(String contactNumber) {
+            this.student_father_contact_number = contactNumber;
+            return this;
+        }public Builder setMotherContactNumber(String contactNumber) {
+            this.student_mother_contact_number = contactNumber;
+            return this;
+        }
+        public Builder setGuardianContactNumber(String contactNumber) {
+            this.student_guardian_contact_number = contactNumber;
+            return this;
+        }
+
         public Student build() {
             return new Student(this);
         }
