@@ -99,6 +99,9 @@ public class UserManager extends AbstractDataManager {
             preparedStatement.setString(1, username);
             ResultSet rs = preparedStatement.executeQuery();
             rs.next();
+            if (rs.getInt("row_exists") < 1) {
+                return AuthResult.NO_USER;
+            }
         } catch (SQLException e) {
             System.err.println(e.getMessage());
             return AuthResult.DATABASE_ERROR;

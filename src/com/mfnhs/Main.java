@@ -6,6 +6,7 @@ import com.mfnhs.backend.manager.StudentManager;
 import com.mfnhs.backend.manager.UserManager;
 import com.mfnhs.frontend.App;
 
+import javax.swing.*;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -44,7 +45,10 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        if (!connect()) return;
+        if (!connect()) {
+            JOptionPane.showMessageDialog(null, "Database cannot be found.", "Database Failure", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
 
         try {
             studentManager.loadStudents(conn);
